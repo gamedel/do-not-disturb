@@ -36,7 +36,7 @@
       </div>
     </header>
     <main class="card-area">
-      <div class="card" id="card">
+      <div class="card" id="card" aria-live="polite">
         <div class="card-image">
           <img id="card-image" alt="" src="" />
         </div>
@@ -45,9 +45,9 @@
           <p id="card-text"></p>
         </div>
       </div>
-      <div class="choice-buttons">
-        <button id="left-button" class="choice choice-left">Влево</button>
-        <button id="right-button" class="choice choice-right">Вправо</button>
+      <div class="gesture-hints">
+        <div class="hint hint-left" id="hint-left">Свайп влево</div>
+        <div class="hint hint-right" id="hint-right">Свайп вправо</div>
       </div>
     </main>
     <footer class="bottom-bar">

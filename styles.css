@@ -112,18 +112,20 @@ body {
   animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
   animation-fill-mode: both;
   will-change: transform, opacity;
+  cursor: grab;
 }
 
 .card--enter {
   animation-name: cardEnter;
 }
 
-.card--swipe-left {
-  animation-name: cardSwipeLeft;
+.card--locked {
+  pointer-events: none;
 }
 
-.card--swipe-right {
-  animation-name: cardSwipeRight;
+.card--dragging {
+  cursor: grabbing;
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.45);
 }
 
 .card-image {
@@ -160,37 +162,53 @@ body {
   color: rgba(248, 249, 255, 0.85);
 }
 
-.choice-buttons {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+.gesture-hints {
   width: 100%;
+  display: flex;
+  gap: 12px;
 }
 
-.choice {
-  padding: 18px;
-  font-size: 1.2rem;
-  border: none;
-  border-radius: 999px;
-  font-weight: 700;
+.hint {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  text-align: center;
+  letter-spacing: 0.02em;
+  color: rgba(248, 249, 255, 0.7);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
 }
 
-.choice-left {
-  background: #ff6b6b;
-  color: #fff;
+.hint--disabled {
+  opacity: 0.45;
 }
 
-.choice-right {
-  background: #38b000;
-  color: #0a1400;
+.hint::before {
+  font-weight: 700;
+  margin-right: 6px;
 }
 
-.choice:active {
-  transform: scale(0.97);
+.hint-left::before {
+  content: '\2190';
+}
+
+.hint-right::before {
+  content: '\2192';
+}
+
+.hint--active {
+  transform: translateY(-2px);
+  color: #f8f9ff;
+}
+
+.hint-left.hint--active {
+  background: rgba(255, 107, 107, 0.35);
+}
+
+.hint-right.hint--active {
+  background: rgba(72, 202, 228, 0.35);
 }
 
 .bottom-bar {
@@ -235,26 +253,3 @@ body {
   }
 }
 
-@keyframes cardSwipeLeft {
-  0% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate3d(-140%, -12%, 0) rotate(-12deg);
-  }
-}
-
-@keyframes cardSwipeRight {
-  0% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) rotate(0deg);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate3d(140%, -12%, 0) rotate(12deg);
-  }
-}

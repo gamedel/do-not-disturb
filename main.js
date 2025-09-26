@@ -9,6 +9,15 @@ let cardMap = new Map();
 let state = null;
 let loading = true;
 let isAnimating = false;
+const SWIPE_TRIGGER_DISTANCE = 70;
+const MAX_DRAG_DISTANCE = 180;
+
+const gestureState = {
+  active: false,
+  pointerId: null,
+  startX: 0,
+  lastX: 0,
+};
 
 const elements = {
   title: document.getElementById('card-title'),
@@ -16,8 +25,8 @@ const elements = {
   image: document.getElementById('card-image'),
   cardImageContainer: document.querySelector('.card-image'),
   card: document.getElementById('card'),
-  leftButton: document.getElementById('left-button'),
-  rightButton: document.getElementById('right-button'),
+  hintLeft: document.getElementById('hint-left'),
+  hintRight: document.getElementById('hint-right'),
   status: document.getElementById('status-message'),
   reset: document.getElementById('reset-button'),
   resourceBars: Array.from(document.querySelectorAll('.resource')),
@@ -29,34 +38,127 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupInteractions() {
-  elements.leftButton.addEventListener('click', () => handleChoice('left'));
-  elements.rightButton.addEventListener('click', () => handleChoice('right'));
   elements.reset.addEventListener('click', resetGame);
 
-  let startX = null;
-  let isSwiping = false;
+  elements.card.addEventListener('pointerdown', onPointerDown);
+  elements.card.addEventListener('pointermove', onPointerMove);
+  elements.card.addEventListener('pointerup', onPointerUp);
+  elements.card.addEventListener('pointercancel', onPointerCancel);
+  elements.card.addEventListener('lostpointercapture', onPointerCancel);
+}
 
-  elements.card.addEventListener('touchstart', (event) => {
-    if (state?.gameOver || loading || isAnimating) return;
-    startX = event.changedTouches[0].clientX;
-    isSwiping = true;
-  });
+function onPointerDown(event) {
+  if (!event.isPrimary || loading || state?.gameOver || isAnimating) return;
+  gestureState.active = true;
+  gestureState.pointerId = event.pointerId;
+  gestureState.startX = event.clientX;
+  gestureState.lastX = event.clientX;
+  elements.card.setPointerCapture(event.pointerId);
+  elements.card.classList.add('card--dragging');
+  elements.card.style.transition = 'none';
+  event.preventDefault();
+}
 
-  elements.card.addEventListener('touchend', (event) => {
-    if (!isSwiping || startX === null) return;
-    const endX = event.changedTouches[0].clientX;
-    const deltaX = endX - startX;
-    if (Math.abs(deltaX) > 40) {
-      handleChoice(deltaX < 0 ? 'left' : 'right');
+function onPointerMove(event) {
+  if (!gestureState.active || event.pointerId !== gestureState.pointerId) return;
+  gestureState.lastX = event.clientX;
+  applyDrag(gestureState.lastX - gestureState.startX);
+}
+
+function onPointerUp(event) {
+  if (!gestureState.active || event.pointerId !== gestureState.pointerId) return;
+  finishGesture(event.clientX - gestureState.startX);
+}
+
+function onPointerCancel(event) {
+  if (!gestureState.active || (event.pointerId && event.pointerId !== gestureState.pointerId)) return;
+  finishGesture(0);
+}
+
+function finishGesture(deltaX) {
+  const card = elements.card;
+  if (gestureState.pointerId !== null) {
+    try {
+      card.releasePointerCapture(gestureState.pointerId);
+    } catch (error) {
+      // ignore release errors (browser may already release capture)
     }
-    startX = null;
-    isSwiping = false;
-  });
+  }
+  gestureState.active = false;
+  gestureState.pointerId = null;
+  card.classList.remove('card--dragging');
 
-  elements.card.addEventListener('touchcancel', () => {
-    startX = null;
-    isSwiping = false;
-  });
+  if (loading || state?.gameOver || isAnimating) {
+    resetCardPosition();
+    clearHintActive();
+    return;
+  }
+
+  if (Math.abs(deltaX) >= SWIPE_TRIGGER_DISTANCE) {
+    clearHintActive();
+    handleChoice(deltaX < 0 ? 'left' : 'right');
+  } else {
+    resetCardPosition();
+  }
+}
+
+function applyDrag(deltaX) {
+  const card = elements.card;
+  const clamped = clamp(deltaX, -MAX_DRAG_DISTANCE, MAX_DRAG_DISTANCE);
+  const width = window.innerWidth || card.offsetWidth || 1;
+  const progress = clamp(clamped / (width * 0.45), -1, 1);
+
+  card.style.transition = 'none';
+  card.style.transform = `translate3d(${clamped}px, ${progress * -22}px, 0) rotate(${progress * 12}deg)`;
+  card.style.opacity = `${1 - Math.min(Math.abs(progress) * 0.35, 0.35)}`;
+
+  updateHintActivity(progress);
+}
+
+function resetCardPosition() {
+  const card = elements.card;
+  card.style.transition = 'transform 0.28s ease, opacity 0.28s ease';
+  card.style.transform = '';
+  card.style.opacity = '';
+  clearHintActive();
+
+  const handleTransitionEnd = (event) => {
+    if (event.target !== card) return;
+    card.style.transition = '';
+  };
+
+  card.addEventListener('transitionend', handleTransitionEnd, { once: true });
+}
+
+function clearHintActive() {
+  elements.hintLeft.classList.remove('hint--active');
+  elements.hintRight.classList.remove('hint--active');
+}
+
+function updateHintActivity(progress) {
+  if (progress <= -0.2) {
+    elements.hintLeft.classList.add('hint--active');
+    elements.hintRight.classList.remove('hint--active');
+  } else if (progress >= 0.2) {
+    elements.hintRight.classList.add('hint--active');
+    elements.hintLeft.classList.remove('hint--active');
+  } else {
+    clearHintActive();
+  }
+}
+
+function updateHintLabels(card) {
+  if (!card) {
+    elements.hintLeft.textContent = 'Свайп влево';
+    elements.hintRight.textContent = 'Свайп вправо';
+    return;
+  }
+
+  const leftLabel = card.choices?.left?.label ?? 'Влево';
+  const rightLabel = card.choices?.right?.label ?? 'Вправо';
+
+  elements.hintLeft.textContent = `Влево: ${leftLabel}`;
+  elements.hintRight.textContent = `Вправо: ${rightLabel}`;
 }
 
 async function init() {
@@ -176,8 +278,8 @@ function drawNextCard() {
   elements.cardImageContainer.style.display = 'none';
   elements.image.removeAttribute('src');
   elements.image.alt = '';
-  elements.leftButton.textContent = 'Ждать';
-  elements.rightButton.textContent = 'Играть';
+  elements.hintLeft.textContent = 'Пауза';
+  elements.hintRight.textContent = 'Новая смена';
   elements.status.textContent = 'Подходящих карточек нет — обновите смену.';
   disableChoices(true);
   saveState();
@@ -206,8 +308,7 @@ function renderCard() {
     elements.image.removeAttribute('src');
     elements.image.alt = '';
   }
-  elements.leftButton.textContent = card.choices.left.label;
-  elements.rightButton.textContent = card.choices.right.label;
+  updateHintLabels(card);
   elements.status.textContent = `День ${state.day}`;
   updateResources();
   saveState();
@@ -215,8 +316,13 @@ function renderCard() {
 }
 
 function disableChoices(disabled) {
-  elements.leftButton.disabled = disabled;
-  elements.rightButton.disabled = disabled;
+  elements.card.classList.toggle('card--locked', disabled);
+  [elements.hintLeft, elements.hintRight].forEach((hint) => {
+    hint.classList.toggle('hint--disabled', disabled);
+  });
+  if (disabled) {
+    clearHintActive();
+  }
 }
 
 async function handleChoice(side) {
@@ -306,37 +412,44 @@ function clamp(value, min, max) {
 function playSwipeAnimation(direction) {
   return new Promise((resolve) => {
     const cardElement = elements.card;
-    const className = direction === 'left' ? 'card--swipe-left' : 'card--swipe-right';
-    let finished = false;
+    const width = window.innerWidth || cardElement.offsetWidth || 1;
+    const offsetX = direction === 'left' ? -width * 1.25 : width * 1.25;
+    const rotateDeg = direction === 'left' ? -16 : 16;
+    const offsetY = -48;
 
     const cleanup = () => {
-      if (finished) return;
-      finished = true;
-      cardElement.classList.remove(className);
+      cardElement.style.transition = '';
+      cardElement.style.transform = '';
+      cardElement.style.opacity = '';
+      cardElement.removeEventListener('transitionend', onTransitionEnd);
       resolve();
     };
 
-    const onAnimationEnd = (event) => {
+    const onTransitionEnd = (event) => {
       if (event.target !== cardElement) return;
-      cardElement.removeEventListener('animationend', onAnimationEnd);
       cleanup();
     };
 
-    cardElement.addEventListener('animationend', onAnimationEnd);
+    cardElement.removeEventListener('transitionend', onTransitionEnd);
+    cardElement.addEventListener('transitionend', onTransitionEnd);
+
     requestAnimationFrame(() => {
-      cardElement.classList.remove('card--enter');
-      cardElement.classList.add(className);
+      cardElement.style.transition = 'transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.45s ease';
+      cardElement.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) rotate(${rotateDeg}deg)`;
+      cardElement.style.opacity = '0';
     });
 
-    setTimeout(() => {
-      cardElement.removeEventListener('animationend', onAnimationEnd);
-      cleanup();
-    }, 650);
+    setTimeout(cleanup, 600);
   });
 }
 
 function playCardEnterAnimation() {
   const cardElement = elements.card;
+  cardElement.style.transition = '';
+  cardElement.style.transform = '';
+  cardElement.style.opacity = '';
+  cardElement.classList.remove('card--dragging');
+  clearHintActive();
   cardElement.classList.remove('card--enter');
   void cardElement.offsetWidth;
   cardElement.classList.add('card--enter');
