@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Do Not Disturb</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <meta name="theme-color" content="#1f2338">
+</head>
+<body>
+  <div id="app">
+    <header class="top-bar">
+      <div class="resource" data-key="service">
+        <span class="label">Сервис</span>
+        <div class="bar"><div class="fill"></div></div>
+        <span class="value">0</span>
+      </div>
+      <div class="resource" data-key="revenue">
+        <span class="label">Доход</span>
+        <div class="bar"><div class="fill"></div></div>
+        <span class="value">0</span>
+      </div>
+      <div class="resource" data-key="order">
+        <span class="label">Порядок</span>
+        <div class="bar"><div class="fill"></div></div>
+        <span class="value">0</span>
+      </div>
+      <div class="resource" data-key="burnout">
+        <span class="label">Выгорание</span>
+        <div class="bar"><div class="fill"></div></div>
+        <span class="value">0</span>
+      </div>
+    </header>
+    <main class="card-area">
+      <div class="card" id="card">
+        <div class="card-image">
+          <img id="card-image" alt="" src="" />
+        </div>
+        <div class="card-body">
+          <h1 id="card-title"></h1>
+          <p id="card-text"></p>
+        </div>
+      </div>
+      <div class="choice-buttons">
+        <button id="left-button" class="choice choice-left">Влево</button>
+        <button id="right-button" class="choice choice-right">Вправо</button>
+      </div>
+    </main>
+    <footer class="bottom-bar">
+      <button id="reset-button" class="reset">Новая смена</button>
+      <div id="status-message" class="status" role="status"></div>
+    </footer>
+  </div>
+  <script src="main.js" defer></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
