@@ -276,6 +276,8 @@ function drawNextCard() {
   elements.title.textContent = 'Новая неделя';
   elements.text.textContent = 'Все спокойно. Наслаждайтесь паузой или начните новую смену!';
   elements.cardImageContainer.style.display = 'none';
+  elements.cardImageContainer.classList.remove('card-image--placeholder');
+  elements.image.hidden = true;
   elements.image.removeAttribute('src');
   elements.image.alt = '';
   elements.hintLeft.textContent = 'Пауза';
@@ -299,12 +301,15 @@ function renderCard() {
   disableChoices(state.gameOver);
   elements.title.textContent = card.title;
   elements.text.textContent = card.text;
-  if (card.image) {
-    elements.cardImageContainer.style.display = 'block';
+  const hasImage = Boolean(card.image);
+  elements.cardImageContainer.style.display = '';
+  elements.cardImageContainer.classList.toggle('card-image--placeholder', !hasImage);
+  if (hasImage) {
+    elements.image.hidden = false;
     elements.image.src = card.image;
     elements.image.alt = card.title;
   } else {
-    elements.cardImageContainer.style.display = 'none';
+    elements.image.hidden = true;
     elements.image.removeAttribute('src');
     elements.image.alt = '';
   }
