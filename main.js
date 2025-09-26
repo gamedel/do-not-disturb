@@ -8,6 +8,7 @@ let cardList = [];
 let cardMap = new Map();
 let state = null;
 let loading = true;
+let isAnimating = false;
 
 const elements = {
   title: document.getElementById('card-title'),
@@ -36,7 +37,7 @@ function setupInteractions() {
   let isSwiping = false;
 
   elements.card.addEventListener('touchstart', (event) => {
-    if (state?.gameOver || loading) return;
+    if (state?.gameOver || loading || isAnimating) return;
     startX = event.changedTouches[0].clientX;
     isSwiping = true;
   });
@@ -48,6 +49,11 @@ function setupInteractions() {
     if (Math.abs(deltaX) > 40) {
       handleChoice(deltaX < 0 ? 'left' : 'right');
     }
+    startX = null;
+    isSwiping = false;
+  });
+
+  elements.card.addEventListener('touchcancel', () => {
     startX = null;
     isSwiping = false;
   });
@@ -175,6 +181,7 @@ function drawNextCard() {
   elements.status.textContent = 'Подходящих карточек нет — обновите смену.';
   disableChoices(true);
   saveState();
+  playCardEnterAnimation();
 }
 
 function renderCard() {
@@ -204,6 +211,7 @@ function renderCard() {
   elements.status.textContent = `День ${state.day}`;
   updateResources();
   saveState();
+  playCardEnterAnimation();
 }
 
 function disableChoices(disabled) {
@@ -211,12 +219,17 @@ function disableChoices(disabled) {
   elements.rightButton.disabled = disabled;
 }
 
-function handleChoice(side) {
-  if (loading || state.gameOver) return;
+async function handleChoice(side) {
+  if (loading || state.gameOver || isAnimating) return;
   const card = cardMap.get(state.currentCardId);
   if (!card) return;
   const choice = card.choices[side];
   if (!choice) return;
+
+  isAnimating = true;
+  disableChoices(true);
+
+  await playSwipeAnimation(side);
 
   applyEffects(choice.effects);
   applyFlags(choice.flags_set);
@@ -224,14 +237,18 @@ function handleChoice(side) {
 
   state.day += 1;
   updateResources();
+  saveState();
 
   if (checkDefeat()) {
+    renderCard();
+    isAnimating = false;
     return;
   }
 
   state.currentCardId = null;
   saveState();
   drawNextCard();
+  isAnimating = false;
 }
 
 function applyEffects(effects = {}) {
@@ -284,6 +301,45 @@ function translateResource(key) {
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
+}
+
+function playSwipeAnimation(direction) {
+  return new Promise((resolve) => {
+    const cardElement = elements.card;
+    const className = direction === 'left' ? 'card--swipe-left' : 'card--swipe-right';
+    let finished = false;
+
+    const cleanup = () => {
+      if (finished) return;
+      finished = true;
+      cardElement.classList.remove(className);
+      resolve();
+    };
+
+    const onAnimationEnd = (event) => {
+      if (event.target !== cardElement) return;
+      cardElement.removeEventListener('animationend', onAnimationEnd);
+      cleanup();
+    };
+
+    cardElement.addEventListener('animationend', onAnimationEnd);
+    requestAnimationFrame(() => {
+      cardElement.classList.remove('card--enter');
+      cardElement.classList.add(className);
+    });
+
+    setTimeout(() => {
+      cardElement.removeEventListener('animationend', onAnimationEnd);
+      cleanup();
+    }, 650);
+  });
+}
+
+function playCardEnterAnimation() {
+  const cardElement = elements.card;
+  cardElement.classList.remove('card--enter');
+  void cardElement.offsetWidth;
+  cardElement.classList.add('card--enter');
 }
 
 function resetGame() {
