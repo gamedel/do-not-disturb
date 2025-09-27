@@ -362,26 +362,32 @@ async function handleChoice(side) {
   isAnimating = true;
   disableChoices(true);
 
-  await playSwipeAnimation(side);
+  try {
+    try {
+      await playSwipeAnimation(side);
+    } catch (error) {
+      console.warn('Swipe animation did not finish as expected', error);
+    }
 
-  applyEffects(choice.effects);
-  applyFlags(choice.flags_set);
-  applyDeckChanges(choice.adds, choice.removes);
+    applyEffects(choice.effects);
+    applyFlags(choice.flags_set);
+    applyDeckChanges(choice.adds, choice.removes);
 
-  state.day += 1;
-  updateResources();
-  saveState();
+    state.day += 1;
+    updateResources();
+    saveState();
 
-  if (checkDefeat()) {
-    renderCard();
+    if (checkDefeat()) {
+      renderCard();
+      return;
+    }
+
+    state.currentCardId = null;
+    saveState();
+    drawNextCard();
+  } finally {
     isAnimating = false;
-    return;
   }
-
-  state.currentCardId = null;
-  saveState();
-  drawNextCard();
-  isAnimating = false;
 }
 
 function applyEffects(effects = {}) {
@@ -495,9 +501,14 @@ function playSwipeAnimation(direction) {
     );
 
     let settled = false;
+    let failSafeTimeout = null;
+
     const cleanup = () => {
       if (settled) return;
       settled = true;
+      if (failSafeTimeout !== null) {
+        clearTimeout(failSafeTimeout);
+      }
       try {
         animation.cancel();
       } catch (error) {
@@ -510,8 +521,13 @@ function playSwipeAnimation(direction) {
       resolve();
     };
 
-    animation.onfinish = cleanup;
-    animation.oncancel = cleanup;
+    failSafeTimeout = window.setTimeout(() => cleanup(), 800);
+
+    animation.addEventListener('finish', cleanup, { once: true });
+    animation.addEventListener('cancel', cleanup, { once: true });
+    if (typeof animation.finished?.then === 'function') {
+      animation.finished.then(() => cleanup(), () => cleanup());
+    }
   });
 }
 
