@@ -712,6 +712,11 @@ function playSwipeAnimation(cardElement, direction) {
       if (failSafeTimeout !== null) {
         clearTimeout(failSafeTimeout);
       }
+      try {
+        animation.cancel();
+      } catch (cancelError) {
+        // Ignore cancellation errors – animation may already be finished.
+      }
       finalize();
     };
 
