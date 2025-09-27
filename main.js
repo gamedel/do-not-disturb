@@ -498,6 +498,11 @@ function playSwipeAnimation(direction) {
     const cleanup = () => {
       if (settled) return;
       settled = true;
+      try {
+        animation.cancel();
+      } catch (error) {
+        // Some browsers may throw if the animation is already finished.
+      }
       cardElement.style.transition = '';
       cardElement.style.transform = '';
       cardElement.style.opacity = '';
