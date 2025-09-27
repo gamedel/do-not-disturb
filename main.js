@@ -110,11 +110,11 @@ function applyDrag(deltaX) {
 
   card.style.transition = 'none';
   const rotationZ = progress * 14;
-  const rotationY = progress * 20;
-  const rotationX = -progress * 6;
-  const translateY = progress * -26;
-  const translateZ = Math.abs(progress) * -30;
-  const scale = 1 - Math.min(Math.abs(progress) * 0.04, 0.07);
+  const rotationY = progress * 24;
+  const rotationX = -progress * 8;
+  const translateY = progress * -32;
+  const translateZ = Math.abs(progress) * -46;
+  const scale = 1 - Math.min(Math.abs(progress) * 0.05, 0.08);
   card.style.transform = `translate3d(${clamped}px, ${translateY}px, ${translateZ}px) rotateX(${rotationX}deg) rotateY(${rotationY}deg) rotate(${rotationZ}deg) scale(${scale})`;
   card.style.opacity = `${1 - Math.min(Math.abs(progress) * 0.32, 0.32)}`;
 
@@ -439,37 +439,74 @@ function clamp(value, min, max) {
 function playSwipeAnimation(direction) {
   return new Promise((resolve) => {
     const cardElement = elements.card;
+    const computedStyle = window.getComputedStyle(cardElement);
+    const startTransform = cardElement.style.transform || computedStyle.transform || 'none';
+    const startOpacity = parseFloat(cardElement.style.opacity || computedStyle.opacity || '1');
     const width = window.innerWidth || cardElement.offsetWidth || 1;
-    const offsetX = direction === 'left' ? -width * 1.25 : width * 1.25;
-    const rotateZ = direction === 'left' ? -32 : 32;
-    const rotateY = direction === 'left' ? -48 : 48;
-    const rotateX = direction === 'left' ? 14 : -14;
-    const offsetY = -70;
-    const offsetZ = -120;
+    const travelX = width * 1.35;
+    const offsetX = direction === 'left' ? -travelX : travelX;
+    const tiltY = direction === 'left' ? -42 : 42;
+    const tiltZ = direction === 'left' ? -36 : 36;
+    const tiltX = direction === 'left' ? 18 : -18;
+    const previousOrigin = cardElement.style.transformOrigin;
 
+    if (typeof cardElement.animate !== 'function') {
+      const rotateZ = direction === 'left' ? -36 : 36;
+      const offsetY = -110;
+      const offsetZ = -180;
+      cardElement.style.transition = 'transform 0.55s cubic-bezier(0.22, 0.71, 0.35, 1), opacity 0.5s ease';
+      cardElement.style.transformOrigin = '50% 60%';
+      cardElement.style.transform = `translate3d(${offsetX}px, ${offsetY}px, ${offsetZ}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotate(${rotateZ}deg) scale(0.78)`;
+      cardElement.style.opacity = '0';
+      setTimeout(() => {
+        cardElement.style.transition = '';
+        cardElement.style.transform = '';
+        cardElement.style.opacity = '';
+        cardElement.style.transformOrigin = previousOrigin;
+        resolve();
+      }, 580);
+      return;
+    }
+
+    cardElement.style.transition = 'none';
+    cardElement.style.transformOrigin = '50% 60%';
+
+    const animation = cardElement.animate(
+      [
+        {
+          transform: startTransform === 'none' ? 'translate3d(0, 0, 0)' : startTransform,
+          opacity: startOpacity,
+        },
+        {
+          transform: `translate3d(${offsetX * 0.35}px, -40px, -90px) rotateX(${tiltX * 0.6}deg) rotateY(${tiltY * 0.7}deg) rotate(${tiltZ * 0.8}deg) scale(0.92)`,
+          opacity: Math.max(startOpacity - 0.2, 0.7),
+          offset: 0.45,
+        },
+        {
+          transform: `translate3d(${offsetX}px, -150px, -210px) rotateX(${tiltX}deg) rotateY(${tiltY * 1.25}deg) rotate(${tiltZ * 1.4}deg) scale(0.72)`,
+          opacity: 0,
+        },
+      ],
+      {
+        duration: 620,
+        easing: 'cubic-bezier(0.23, 0.76, 0.38, 1)',
+        fill: 'forwards',
+      }
+    );
+
+    let settled = false;
     const cleanup = () => {
+      if (settled) return;
+      settled = true;
       cardElement.style.transition = '';
       cardElement.style.transform = '';
       cardElement.style.opacity = '';
-      cardElement.removeEventListener('transitionend', onTransitionEnd);
+      cardElement.style.transformOrigin = previousOrigin;
       resolve();
     };
 
-    const onTransitionEnd = (event) => {
-      if (event.target !== cardElement) return;
-      cleanup();
-    };
-
-    cardElement.removeEventListener('transitionend', onTransitionEnd);
-    cardElement.addEventListener('transitionend', onTransitionEnd);
-
-    requestAnimationFrame(() => {
-      cardElement.style.transition = 'transform 0.55s cubic-bezier(0.22, 0.71, 0.35, 1), opacity 0.5s ease';
-      cardElement.style.transform = `translate3d(${offsetX}px, ${offsetY}px, ${offsetZ}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${rotateZ}deg) scale(0.86)`;
-      cardElement.style.opacity = '0';
-    });
-
-    setTimeout(cleanup, 600);
+    animation.onfinish = cleanup;
+    animation.oncancel = cleanup;
   });
 }
 
