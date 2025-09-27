@@ -555,10 +555,30 @@ async function handleChoice(side) {
         setCardContent(cardViews.current, incomingCard);
         updateHintLabels(incomingCard);
         elements.status.textContent = `День ${state.day}`;
-        updatePreviewCardView(upcomingPreviewCard);
         disableChoices(false);
         saveState();
-        playCardEnterAnimation();
+
+        const enterAnimation = playCardEnterAnimation();
+        let previewUpdated = false;
+        const applyUpcomingPreview = () => {
+          if (previewUpdated) return;
+          previewUpdated = true;
+          updatePreviewCardView(upcomingPreviewCard);
+        };
+
+        if (enterAnimation && typeof enterAnimation.then === 'function') {
+          enterAnimation.then(applyUpcomingPreview, applyUpcomingPreview);
+        }
+
+        if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+              applyUpcomingPreview();
+            });
+          });
+        } else {
+          applyUpcomingPreview();
+        }
       };
     } else {
       updatePreviewCardView(null);
@@ -732,14 +752,42 @@ function playSwipeAnimation(cardElement, direction) {
 
 function playCardEnterAnimation() {
   const cardElement = elements.card;
+  if (!cardElement) {
+    return Promise.resolve();
+  }
+
   cardElement.style.transition = '';
   cardElement.style.transform = '';
   cardElement.style.opacity = '';
   cardElement.classList.remove('card--dragging');
   clearHintActive();
+
   cardElement.classList.remove('card--enter');
   void cardElement.offsetWidth;
   cardElement.classList.add('card--enter');
+
+  return new Promise((resolve) => {
+    let finished = false;
+
+    const cleanup = () => {
+      if (finished) return;
+      finished = true;
+      cardElement.classList.remove('card--enter');
+      resolve();
+    };
+
+    const handleAnimationEnd = (event) => {
+      if (event.target !== cardElement) return;
+      cardElement.removeEventListener('animationend', handleAnimationEnd);
+      cleanup();
+    };
+
+    cardElement.addEventListener('animationend', handleAnimationEnd);
+    window.setTimeout(() => {
+      cardElement.removeEventListener('animationend', handleAnimationEnd);
+      cleanup();
+    }, 700);
+  });
 }
 
 function resetGame() {
