@@ -109,11 +109,13 @@ function applyDrag(deltaX) {
   const progress = clamp(clamped / (width * 0.45), -1, 1);
 
   card.style.transition = 'none';
-  const rotationZ = progress * 10;
-  const rotationY = progress * 14;
-  const translateY = progress * -20;
+  const rotationZ = progress * 14;
+  const rotationY = progress * 24;
+  const rotationX = -progress * 8;
+  const translateY = progress * -32;
+  const translateZ = Math.abs(progress) * -46;
   const scale = 1 - Math.min(Math.abs(progress) * 0.05, 0.08);
-  card.style.transform = `translate3d(${clamped}px, ${translateY}px, 0) rotate(${rotationZ}deg) rotateY(${rotationY}deg) scale(${scale})`;
+  card.style.transform = `translate3d(${clamped}px, ${translateY}px, ${translateZ}px) rotateX(${rotationX}deg) rotateY(${rotationY}deg) rotate(${rotationZ}deg) scale(${scale})`;
   card.style.opacity = `${1 - Math.min(Math.abs(progress) * 0.32, 0.32)}`;
 
   updateHintActivity(progress);
@@ -139,6 +141,22 @@ function clearHintActive() {
   elements.hintRight.classList.remove('hint--active');
 }
 
+function setHintContent(element, directionLabel, actionLabel = '') {
+  const trimmedAction = actionLabel?.trim?.() ?? '';
+  const labelText = trimmedAction ? `${directionLabel}: ${trimmedAction}` : directionLabel;
+  if (trimmedAction) {
+    element.dataset.label = trimmedAction;
+  } else {
+    delete element.dataset.label;
+  }
+  element.setAttribute('aria-label', labelText);
+  if (trimmedAction) {
+    element.title = labelText;
+  } else {
+    element.removeAttribute('title');
+  }
+}
+
 function updateHintActivity(progress) {
   if (progress <= -0.2) {
     elements.hintLeft.classList.add('hint--active');
@@ -153,16 +171,16 @@ function updateHintActivity(progress) {
 
 function updateHintLabels(card) {
   if (!card) {
-    elements.hintLeft.textContent = 'Свайп влево';
-    elements.hintRight.textContent = 'Свайп вправо';
+    setHintContent(elements.hintLeft, 'Свайп влево');
+    setHintContent(elements.hintRight, 'Свайп вправо');
     return;
   }
 
-  const leftLabel = card.choices?.left?.label ?? 'Влево';
-  const rightLabel = card.choices?.right?.label ?? 'Вправо';
+  const leftLabel = card.choices?.left?.label ?? '';
+  const rightLabel = card.choices?.right?.label ?? '';
 
-  elements.hintLeft.textContent = `Влево: ${leftLabel}`;
-  elements.hintRight.textContent = `Вправо: ${rightLabel}`;
+  setHintContent(elements.hintLeft, 'Влево', leftLabel);
+  setHintContent(elements.hintRight, 'Вправо', rightLabel);
 }
 
 async function init() {
@@ -284,8 +302,8 @@ function drawNextCard() {
   elements.image.hidden = true;
   elements.image.removeAttribute('src');
   elements.image.alt = '';
-  elements.hintLeft.textContent = 'Пауза';
-  elements.hintRight.textContent = 'Новая смена';
+  setHintContent(elements.hintLeft, 'Свайп влево', 'Пауза');
+  setHintContent(elements.hintRight, 'Свайп вправо', 'Новая смена');
   elements.status.textContent = 'Подходящих карточек нет — обновите смену.';
   disableChoices(true);
   saveState();
@@ -344,26 +362,32 @@ async function handleChoice(side) {
   isAnimating = true;
   disableChoices(true);
 
-  await playSwipeAnimation(side);
+  try {
+    try {
+      await playSwipeAnimation(side);
+    } catch (error) {
+      console.warn('Swipe animation did not finish as expected', error);
+    }
 
-  applyEffects(choice.effects);
-  applyFlags(choice.flags_set);
-  applyDeckChanges(choice.adds, choice.removes);
+    applyEffects(choice.effects);
+    applyFlags(choice.flags_set);
+    applyDeckChanges(choice.adds, choice.removes);
 
-  state.day += 1;
-  updateResources();
-  saveState();
+    state.day += 1;
+    updateResources();
+    saveState();
 
-  if (checkDefeat()) {
-    renderCard();
+    if (checkDefeat()) {
+      renderCard();
+      return;
+    }
+
+    state.currentCardId = null;
+    saveState();
+    drawNextCard();
+  } finally {
     isAnimating = false;
-    return;
   }
-
-  state.currentCardId = null;
-  saveState();
-  drawNextCard();
-  isAnimating = false;
 }
 
 function applyEffects(effects = {}) {
@@ -421,35 +445,89 @@ function clamp(value, min, max) {
 function playSwipeAnimation(direction) {
   return new Promise((resolve) => {
     const cardElement = elements.card;
+    const computedStyle = window.getComputedStyle(cardElement);
+    const startTransform = cardElement.style.transform || computedStyle.transform || 'none';
+    const startOpacity = parseFloat(cardElement.style.opacity || computedStyle.opacity || '1');
     const width = window.innerWidth || cardElement.offsetWidth || 1;
-    const offsetX = direction === 'left' ? -width * 1.25 : width * 1.25;
-    const rotateZ = direction === 'left' ? -22 : 22;
-    const rotateY = direction === 'left' ? -28 : 28;
-    const offsetY = -56;
+    const travelX = width * 1.35;
+    const offsetX = direction === 'left' ? -travelX : travelX;
+    const tiltY = direction === 'left' ? -42 : 42;
+    const tiltZ = direction === 'left' ? -36 : 36;
+    const tiltX = direction === 'left' ? 18 : -18;
+    const previousOrigin = cardElement.style.transformOrigin;
+
+    if (typeof cardElement.animate !== 'function') {
+      const rotateZ = direction === 'left' ? -36 : 36;
+      const offsetY = -110;
+      const offsetZ = -180;
+      cardElement.style.transition = 'transform 0.55s cubic-bezier(0.22, 0.71, 0.35, 1), opacity 0.5s ease';
+      cardElement.style.transformOrigin = '50% 60%';
+      cardElement.style.transform = `translate3d(${offsetX}px, ${offsetY}px, ${offsetZ}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotate(${rotateZ}deg) scale(0.78)`;
+      cardElement.style.opacity = '0';
+      setTimeout(() => {
+        cardElement.style.transition = '';
+        cardElement.style.transform = '';
+        cardElement.style.opacity = '';
+        cardElement.style.transformOrigin = previousOrigin;
+        resolve();
+      }, 580);
+      return;
+    }
+
+    cardElement.style.transition = 'none';
+    cardElement.style.transformOrigin = '50% 60%';
+
+    const animation = cardElement.animate(
+      [
+        {
+          transform: startTransform === 'none' ? 'translate3d(0, 0, 0)' : startTransform,
+          opacity: startOpacity,
+        },
+        {
+          transform: `translate3d(${offsetX * 0.35}px, -40px, -90px) rotateX(${tiltX * 0.6}deg) rotateY(${tiltY * 0.7}deg) rotate(${tiltZ * 0.8}deg) scale(0.92)`,
+          opacity: Math.max(startOpacity - 0.2, 0.7),
+          offset: 0.45,
+        },
+        {
+          transform: `translate3d(${offsetX}px, -150px, -210px) rotateX(${tiltX}deg) rotateY(${tiltY * 1.25}deg) rotate(${tiltZ * 1.4}deg) scale(0.72)`,
+          opacity: 0,
+        },
+      ],
+      {
+        duration: 620,
+        easing: 'cubic-bezier(0.23, 0.76, 0.38, 1)',
+        fill: 'forwards',
+      }
+    );
+
+    let settled = false;
+    let failSafeTimeout = null;
 
     const cleanup = () => {
+      if (settled) return;
+      settled = true;
+      if (failSafeTimeout !== null) {
+        clearTimeout(failSafeTimeout);
+      }
+      try {
+        animation.cancel();
+      } catch (error) {
+        // Some browsers may throw if the animation is already finished.
+      }
       cardElement.style.transition = '';
       cardElement.style.transform = '';
       cardElement.style.opacity = '';
-      cardElement.removeEventListener('transitionend', onTransitionEnd);
+      cardElement.style.transformOrigin = previousOrigin;
       resolve();
     };
 
-    const onTransitionEnd = (event) => {
-      if (event.target !== cardElement) return;
-      cleanup();
-    };
+    failSafeTimeout = window.setTimeout(() => cleanup(), 800);
 
-    cardElement.removeEventListener('transitionend', onTransitionEnd);
-    cardElement.addEventListener('transitionend', onTransitionEnd);
-
-    requestAnimationFrame(() => {
-      cardElement.style.transition = 'transform 0.5s cubic-bezier(0.16, 0.84, 0.44, 1), opacity 0.5s ease';
-      cardElement.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) rotate(${rotateZ}deg) rotateY(${rotateY}deg) scale(0.9)`;
-      cardElement.style.opacity = '0';
-    });
-
-    setTimeout(cleanup, 600);
+    animation.addEventListener('finish', cleanup, { once: true });
+    animation.addEventListener('cancel', cleanup, { once: true });
+    if (typeof animation.finished?.then === 'function') {
+      animation.finished.then(() => cleanup(), () => cleanup());
+    }
   });
 }
 
