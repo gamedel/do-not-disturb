@@ -3,7 +3,7 @@
     "id": "overbook_001",
     "title": "Двойное бронирование",
     "text": "Гость и гость из приложения на один номер.",
-    "image": "",
+    "image": "test.png",
     "tags": [
       "overbook",
       "night"
