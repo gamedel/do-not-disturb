@@ -170,7 +170,8 @@ function clearHintActive() {
   elements.hintRight.classList.remove('hint--active');
 }
 
-function setHintContent(element, directionLabel, actionLabel = '') {
+function setHintContent(element, directionLabel, actionLabel = '', options = {}) {
+  const { showDirection = true, ariaDirection = directionLabel } = options;
   const directionSpan =
     element === elements.hintLeft
       ? elements.hintLeftDirection
@@ -184,19 +185,33 @@ function setHintContent(element, directionLabel, actionLabel = '') {
       ? elements.hintRightLabel
       : element.querySelector('.hint__label');
   const trimmedAction = actionLabel?.trim?.() ?? '';
-  if (directionSpan) {
-    directionSpan.textContent = trimmedAction
+  const directionText = showDirection
+    ? trimmedAction
       ? `${directionLabel}:`
-      : directionLabel;
+      : directionLabel
+    : '';
+  if (directionSpan) {
+    directionSpan.textContent = directionText;
   }
   if (labelSpan) {
     labelSpan.textContent = trimmedAction;
   }
-  const labelText = trimmedAction ? `${directionLabel}: ${trimmedAction}` : directionLabel;
-  element.setAttribute('aria-label', labelText);
+  const parts = [];
+  if (ariaDirection) {
+    parts.push(ariaDirection);
+  }
   if (trimmedAction) {
+    parts.push(trimmedAction);
+  }
+  const labelText = parts.join(': ');
+  if (labelText) {
+    element.setAttribute('aria-label', labelText);
     element.title = labelText;
+  } else if (ariaDirection) {
+    element.setAttribute('aria-label', ariaDirection);
+    element.removeAttribute('title');
   } else {
+    element.removeAttribute('aria-label');
     element.removeAttribute('title');
   }
 }
@@ -223,8 +238,14 @@ function updateHintLabels(card) {
   const leftLabel = card.choices?.left?.label ?? '';
   const rightLabel = card.choices?.right?.label ?? '';
 
-  setHintContent(elements.hintLeft, 'Влево', leftLabel);
-  setHintContent(elements.hintRight, 'Вправо', rightLabel);
+  setHintContent(elements.hintLeft, 'Свайп влево', leftLabel, {
+    showDirection: false,
+    ariaDirection: 'Свайп влево',
+  });
+  setHintContent(elements.hintRight, 'Свайп вправо', rightLabel, {
+    showDirection: false,
+    ariaDirection: 'Свайп вправо',
+  });
 }
 
 function clearCardView(view) {
@@ -641,6 +662,9 @@ function playSwipeAnimation(cardElement, direction) {
           target.style.opacity = '';
         }
         target.style.transformOrigin = previousOrigin;
+        if (isFlyingCard) {
+          target.style.display = 'none';
+        }
         resolve();
       }, 580);
       return;
@@ -694,6 +718,9 @@ function playSwipeAnimation(cardElement, direction) {
         target.style.opacity = '';
       }
       target.style.transformOrigin = previousOrigin;
+      if (isFlyingCard) {
+        target.style.display = 'none';
+      }
       resolve();
     };
 

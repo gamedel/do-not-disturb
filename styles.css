@@ -228,7 +228,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.78) 70%, rgba(255, 255, 255, 0.6) 100%);
+  background: none;
   color: #10131a;
   text-shadow: none;
   z-index: 1;
@@ -301,6 +301,10 @@ body {
 .hint__direction {
   font-weight: 600;
   color: inherit;
+}
+
+.hint__direction:empty {
+  display: none;
 }
 
 .hint__label {
