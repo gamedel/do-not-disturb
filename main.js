@@ -657,7 +657,17 @@ function playSwipeAnimation(cardElement, direction) {
         }
         target.style.transformOrigin = previousOrigin;
         if (isFlyingCard) {
+          target.style.visibility = 'hidden';
+          target.style.opacity = '0';
+          target.style.pointerEvents = 'none';
           target.style.display = 'none';
+          if (target.parentNode) {
+            requestAnimationFrame(() => {
+              if (target.parentNode) {
+                target.parentNode.removeChild(target);
+              }
+            });
+          }
         }
         resolve();
       }, 580);
@@ -717,6 +727,13 @@ function playSwipeAnimation(cardElement, direction) {
         target.style.opacity = '0';
         target.style.pointerEvents = 'none';
         target.style.display = 'none';
+        if (target.parentNode) {
+          requestAnimationFrame(() => {
+            if (target.parentNode) {
+              target.parentNode.removeChild(target);
+            }
+          });
+        }
       }
       resolve();
     };
