@@ -36,13 +36,24 @@
       </div>
     </header>
     <main class="card-area">
-      <div class="card" id="card" aria-live="polite">
-        <div class="card-image">
-          <img id="card-image" alt="" src="" />
+      <div class="card-stack">
+        <div class="card card--preview" id="card-preview" aria-hidden="true">
+          <div class="card-image">
+            <img id="card-preview-image" alt="" src="" />
+          </div>
+          <div class="card-body">
+            <h1 id="card-preview-title"></h1>
+            <p id="card-preview-text"></p>
+          </div>
         </div>
-        <div class="card-body">
-          <h1 id="card-title"></h1>
-          <p id="card-text"></p>
+        <div class="card card--current" id="card" aria-live="polite">
+          <div class="card-image">
+            <img id="card-image" alt="" src="" />
+          </div>
+          <div class="card-body">
+            <h1 id="card-title"></h1>
+            <p id="card-text"></p>
+          </div>
         </div>
       </div>
       <div class="gesture-hints">
