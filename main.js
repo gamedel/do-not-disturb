@@ -12,6 +12,8 @@ let isAnimating = false;
 const SWIPE_TRIGGER_DISTANCE = 70;
 const MAX_DRAG_DISTANCE = 180;
 let nextCardId = null;
+const HINT_ACTIVE_CLASS = 'swipe-indicator--active';
+const HINT_DISABLED_CLASS = 'swipe-indicator--disabled';
 
 const gestureState = {
   active: false,
@@ -39,10 +41,8 @@ const elements = {
   resourceBars: Array.from(document.querySelectorAll('.resource')),
 };
 
-elements.hintLeftDirection = elements.hintLeft.querySelector('.hint__direction');
-elements.hintLeftLabel = elements.hintLeft.querySelector('.hint__label');
-elements.hintRightDirection = elements.hintRight.querySelector('.hint__direction');
-elements.hintRightLabel = elements.hintRight.querySelector('.hint__label');
+elements.hintLeftLabel = elements.hintLeft?.querySelector('.swipe-indicator__label');
+elements.hintRightLabel = elements.hintRight?.querySelector('.swipe-indicator__label');
 
 const cardViews = {
   current: {
@@ -166,36 +166,29 @@ function resetCardPosition() {
 }
 
 function clearHintActive() {
-  elements.hintLeft.classList.remove('hint--active');
-  elements.hintRight.classList.remove('hint--active');
+  if (elements.hintLeft) {
+    elements.hintLeft.classList.remove(HINT_ACTIVE_CLASS);
+  }
+  if (elements.hintRight) {
+    elements.hintRight.classList.remove(HINT_ACTIVE_CLASS);
+  }
 }
 
 function setHintContent(element, directionLabel, actionLabel = '', options = {}) {
-  const { showDirection = true, ariaDirection = directionLabel } = options;
-  const directionSpan =
-    element === elements.hintLeft
-      ? elements.hintLeftDirection
-      : element === elements.hintRight
-      ? elements.hintRightDirection
-      : element.querySelector('.hint__direction');
+  if (!element) return;
+  const { ariaDirection = directionLabel } = options;
   const labelSpan =
     element === elements.hintLeft
       ? elements.hintLeftLabel
       : element === elements.hintRight
       ? elements.hintRightLabel
-      : element.querySelector('.hint__label');
+      : element.querySelector('.swipe-indicator__label');
+
   const trimmedAction = actionLabel?.trim?.() ?? '';
-  const directionText = showDirection
-    ? trimmedAction
-      ? `${directionLabel}:`
-      : directionLabel
-    : '';
-  if (directionSpan) {
-    directionSpan.textContent = directionText;
-  }
   if (labelSpan) {
     labelSpan.textContent = trimmedAction;
   }
+
   const parts = [];
   if (ariaDirection) {
     parts.push(ariaDirection);
@@ -217,12 +210,13 @@ function setHintContent(element, directionLabel, actionLabel = '', options = {})
 }
 
 function updateHintActivity(progress) {
+  if (!elements.hintLeft || !elements.hintRight) return;
   if (progress <= -0.2) {
-    elements.hintLeft.classList.add('hint--active');
-    elements.hintRight.classList.remove('hint--active');
+    elements.hintLeft.classList.add(HINT_ACTIVE_CLASS);
+    elements.hintRight.classList.remove(HINT_ACTIVE_CLASS);
   } else if (progress >= 0.2) {
-    elements.hintRight.classList.add('hint--active');
-    elements.hintLeft.classList.remove('hint--active');
+    elements.hintRight.classList.add(HINT_ACTIVE_CLASS);
+    elements.hintLeft.classList.remove(HINT_ACTIVE_CLASS);
   } else {
     clearHintActive();
   }
@@ -239,11 +233,9 @@ function updateHintLabels(card) {
   const rightLabel = card.choices?.right?.label ?? '';
 
   setHintContent(elements.hintLeft, 'Свайп влево', leftLabel, {
-    showDirection: false,
     ariaDirection: 'Свайп влево',
   });
   setHintContent(elements.hintRight, 'Свайп вправо', rightLabel, {
-    showDirection: false,
     ariaDirection: 'Свайп вправо',
   });
 }
@@ -367,7 +359,6 @@ function updateResources() {
     const value = state.resources[key];
     const percent = Math.max(RESOURCE_MIN, Math.min(value, RESOURCE_MAX)) / RESOURCE_MAX * 100;
     resourceElement.querySelector('.fill').style.width = `${percent}%`;
-    resourceElement.querySelector('.value').textContent = value;
   });
 }
 
@@ -506,7 +497,8 @@ function renderCard(options = {}) {
 function disableChoices(disabled) {
   elements.card.classList.toggle('card--locked', disabled);
   [elements.hintLeft, elements.hintRight].forEach((hint) => {
-    hint.classList.toggle('hint--disabled', disabled);
+    if (!hint) return;
+    hint.classList.toggle(HINT_DISABLED_CLASS, disabled);
   });
   if (disabled) {
     clearHintActive();
@@ -576,6 +568,8 @@ function createFlyingCardClone() {
   clone.style.transform = baseCard.style.transform || computedStyle.transform || 'none';
   clone.style.opacity = baseCard.style.opacity || computedStyle.opacity || '1';
   clone.style.transformOrigin = baseCard.style.transformOrigin || computedStyle.transformOrigin || '';
+  clone.style.zIndex = '5';
+  clone.style.willChange = 'transform, opacity';
   elements.cardStack.appendChild(clone);
   return clone;
 }
@@ -719,6 +713,9 @@ function playSwipeAnimation(cardElement, direction) {
       }
       target.style.transformOrigin = previousOrigin;
       if (isFlyingCard) {
+        target.style.visibility = 'hidden';
+        target.style.opacity = '0';
+        target.style.pointerEvents = 'none';
         target.style.display = 'none';
       }
       resolve();

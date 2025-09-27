@@ -58,32 +58,28 @@ body {
   position: relative;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  padding: 6px 8px 8px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto auto;
-  grid-template-areas:
-    'label value'
-    'bar bar';
-  gap: 2px 6px;
+  padding: 8px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .resource .label {
-  grid-area: label;
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: rgba(248, 249, 255, 0.78);
+  text-align: left;
 }
 
 .resource .bar {
-  grid-area: bar;
-  width: 78%;
+  width: 68%;
   height: 3px;
   background: rgba(255, 255, 255, 0.12);
   border-radius: 999px;
   overflow: hidden;
-  margin: 2px auto 0;
+  margin: 0 auto;
 }
 
 .resource .fill {
@@ -93,20 +89,13 @@ body {
   transition: width 0.3s ease;
 }
 
-.resource .value {
-  grid-area: value;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #f8f9ff;
-}
-
 @media (max-width: 380px) {
   .top-bar {
     gap: 5px;
   }
 
   .resource {
-    padding: 5px 6px 7px;
+    padding: 6px 7px 8px;
     border-radius: 10px;
   }
 
@@ -114,11 +103,8 @@ body {
     font-size: 0.54rem;
   }
 
-  .resource .value {
-    font-size: 0.72rem;
-  }
-
   .resource .bar {
+    width: 72%;
     height: 2.5px;
   }
 }
@@ -249,111 +235,68 @@ body {
   font-size: 1.02rem;
 }
 
-.gesture-hints {
-  width: 100%;
+.swipe-indicator {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-
-.hint {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 14px 16px;
-  font-size: 1.08rem;
-  letter-spacing: 0.02em;
-  color: rgba(248, 249, 255, 0.82);
-  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
+  color: rgba(248, 249, 255, 0.72);
+  font-size: 0.95rem;
+  text-align: center;
+  max-width: 140px;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0.85;
+  transition: color 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
 }
 
-.hint--disabled {
-  opacity: 0.45;
+.swipe-indicator--left {
+  left: 14px;
 }
 
-
-.hint__text {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  line-height: 1.2;
-  flex: 1;
-  flex-wrap: wrap;
-  min-width: 0;
+.swipe-indicator--right {
+  right: 14px;
 }
 
-.hint-left .hint__text {
-  justify-content: flex-start;
-  text-align: left;
+.swipe-indicator__arrow {
+  font-size: 2.4rem;
+  line-height: 1;
 }
 
-.hint-right .hint__text {
-  justify-content: flex-end;
-  text-align: right;
-  align-items: flex-end;
+.swipe-indicator__label {
+  font-size: 1rem;
+  color: inherit;
+  opacity: 0.82;
 }
 
-.hint__direction {
+.swipe-indicator__label:empty {
+  display: none;
+}
+
+.swipe-indicator--active {
+  transform: translateY(-50%) scale(1.02);
+  opacity: 1;
+}
+
+.swipe-indicator--active .swipe-indicator__label {
+  opacity: 1;
   font-weight: 600;
-  color: inherit;
 }
 
-.hint__direction:empty {
-  display: none;
+.swipe-indicator--left.swipe-indicator--active {
+  color: #ff7b7b;
 }
 
-.hint__label {
-  font-size: 0.88rem;
-  color: inherit;
-  opacity: 0.78;
+.swipe-indicator--right.swipe-indicator--active {
+  color: #5ad1f0;
 }
 
-.hint--active .hint__label {
-  opacity: 0.92;
-}
-
-.hint__label:empty {
-  display: none;
-}
-
-.hint__arrow {
-  display: inline-block;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-color: transparent;
-}
-
-.hint-left .hint__arrow {
-  border-width: 9px 12px 9px 0;
-  border-right-color: currentColor;
-}
-
-.hint-right .hint__arrow {
-  border-width: 9px 0 9px 12px;
-  border-left-color: currentColor;
-}
-
-.hint--active {
-  transform: translateY(-2px);
-  color: #f8f9ff;
-}
-
-.hint-left.hint--active {
-  background: rgba(255, 107, 107, 0.35);
-}
-
-.hint-right.hint--active {
-  background: rgba(72, 202, 228, 0.35);
-}
-
-.hint--disabled .hint__arrow {
-  opacity: 0.6;
+.swipe-indicator--disabled {
+  opacity: 0.35;
 }
 
 .card-image--placeholder {
@@ -383,6 +326,8 @@ body {
   font-size: 0.95rem;
   color: rgba(248, 249, 255, 0.9);
   text-align: center;
+  align-self: center;
+  padding: 0 8px;
 }
 
 @media (min-width: 600px) {
