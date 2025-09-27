@@ -109,11 +109,13 @@ function applyDrag(deltaX) {
   const progress = clamp(clamped / (width * 0.45), -1, 1);
 
   card.style.transition = 'none';
-  const rotationZ = progress * 10;
-  const rotationY = progress * 14;
-  const translateY = progress * -20;
-  const scale = 1 - Math.min(Math.abs(progress) * 0.05, 0.08);
-  card.style.transform = `translate3d(${clamped}px, ${translateY}px, 0) rotate(${rotationZ}deg) rotateY(${rotationY}deg) scale(${scale})`;
+  const rotationZ = progress * 14;
+  const rotationY = progress * 20;
+  const rotationX = -progress * 6;
+  const translateY = progress * -26;
+  const translateZ = Math.abs(progress) * -30;
+  const scale = 1 - Math.min(Math.abs(progress) * 0.04, 0.07);
+  card.style.transform = `translate3d(${clamped}px, ${translateY}px, ${translateZ}px) rotateX(${rotationX}deg) rotateY(${rotationY}deg) rotate(${rotationZ}deg) scale(${scale})`;
   card.style.opacity = `${1 - Math.min(Math.abs(progress) * 0.32, 0.32)}`;
 
   updateHintActivity(progress);
@@ -139,6 +141,22 @@ function clearHintActive() {
   elements.hintRight.classList.remove('hint--active');
 }
 
+function setHintContent(element, directionLabel, actionLabel = '') {
+  const trimmedAction = actionLabel?.trim?.() ?? '';
+  const labelText = trimmedAction ? `${directionLabel}: ${trimmedAction}` : directionLabel;
+  if (trimmedAction) {
+    element.dataset.label = trimmedAction;
+  } else {
+    delete element.dataset.label;
+  }
+  element.setAttribute('aria-label', labelText);
+  if (trimmedAction) {
+    element.title = labelText;
+  } else {
+    element.removeAttribute('title');
+  }
+}
+
 function updateHintActivity(progress) {
   if (progress <= -0.2) {
     elements.hintLeft.classList.add('hint--active');
@@ -153,16 +171,16 @@ function updateHintActivity(progress) {
 
 function updateHintLabels(card) {
   if (!card) {
-    elements.hintLeft.textContent = 'Свайп влево';
-    elements.hintRight.textContent = 'Свайп вправо';
+    setHintContent(elements.hintLeft, 'Свайп влево');
+    setHintContent(elements.hintRight, 'Свайп вправо');
     return;
   }
 
-  const leftLabel = card.choices?.left?.label ?? 'Влево';
-  const rightLabel = card.choices?.right?.label ?? 'Вправо';
+  const leftLabel = card.choices?.left?.label ?? '';
+  const rightLabel = card.choices?.right?.label ?? '';
 
-  elements.hintLeft.textContent = `Влево: ${leftLabel}`;
-  elements.hintRight.textContent = `Вправо: ${rightLabel}`;
+  setHintContent(elements.hintLeft, 'Влево', leftLabel);
+  setHintContent(elements.hintRight, 'Вправо', rightLabel);
 }
 
 async function init() {
@@ -284,8 +302,8 @@ function drawNextCard() {
   elements.image.hidden = true;
   elements.image.removeAttribute('src');
   elements.image.alt = '';
-  elements.hintLeft.textContent = 'Пауза';
-  elements.hintRight.textContent = 'Новая смена';
+  setHintContent(elements.hintLeft, 'Свайп влево', 'Пауза');
+  setHintContent(elements.hintRight, 'Свайп вправо', 'Новая смена');
   elements.status.textContent = 'Подходящих карточек нет — обновите смену.';
   disableChoices(true);
   saveState();
@@ -423,9 +441,11 @@ function playSwipeAnimation(direction) {
     const cardElement = elements.card;
     const width = window.innerWidth || cardElement.offsetWidth || 1;
     const offsetX = direction === 'left' ? -width * 1.25 : width * 1.25;
-    const rotateZ = direction === 'left' ? -22 : 22;
-    const rotateY = direction === 'left' ? -28 : 28;
-    const offsetY = -56;
+    const rotateZ = direction === 'left' ? -32 : 32;
+    const rotateY = direction === 'left' ? -48 : 48;
+    const rotateX = direction === 'left' ? 14 : -14;
+    const offsetY = -70;
+    const offsetZ = -120;
 
     const cleanup = () => {
       cardElement.style.transition = '';
@@ -444,8 +464,8 @@ function playSwipeAnimation(direction) {
     cardElement.addEventListener('transitionend', onTransitionEnd);
 
     requestAnimationFrame(() => {
-      cardElement.style.transition = 'transform 0.5s cubic-bezier(0.16, 0.84, 0.44, 1), opacity 0.5s ease';
-      cardElement.style.transform = `translate3d(${offsetX}px, ${offsetY}px, 0) rotate(${rotateZ}deg) rotateY(${rotateY}deg) scale(0.9)`;
+      cardElement.style.transition = 'transform 0.55s cubic-bezier(0.22, 0.71, 0.35, 1), opacity 0.5s ease';
+      cardElement.style.transform = `translate3d(${offsetX}px, ${offsetY}px, ${offsetZ}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${rotateZ}deg) scale(0.86)`;
       cardElement.style.opacity = '0';
     });
 
