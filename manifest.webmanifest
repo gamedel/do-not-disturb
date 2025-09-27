@@ -1,0 +1,8 @@
+{
+  "name": "Do Not Disturb",
+  "short_name": "Do Not Disturb",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1f2338",
+  "theme_color": "#1f2338"
+}

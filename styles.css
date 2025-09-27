@@ -1,0 +1,286 @@
+:root {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #f8f9ff;
+  background: #1f2338;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #252a44 0%, #151827 100%);
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+@supports (min-height: 100dvh) {
+  body {
+    min-height: 100dvh;
+  }
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: min(480px, 100vw);
+  min-height: 100vh;
+  padding: calc(env(safe-area-inset-top, 0) + 12px) 14px calc(env(safe-area-inset-bottom, 0) + 14px);
+  gap: 12px;
+}
+
+@supports (min-height: 100dvh) {
+  #app {
+    min-height: 100dvh;
+  }
+}
+
+.top-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  align-items: center;
+}
+
+.resource {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 6px 8px 8px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    'label value'
+    'bar bar';
+  gap: 2px 6px;
+}
+
+.resource .label {
+  grid-area: label;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(248, 249, 255, 0.78);
+}
+
+.resource .bar {
+  grid-area: bar;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.resource .fill {
+  height: 100%;
+  width: 50%;
+  background: linear-gradient(90deg, #5bc0eb, #48cae4);
+  transition: width 0.3s ease;
+}
+
+.resource .value {
+  grid-area: value;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f8f9ff;
+}
+
+
+.card-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  min-height: 0;
+  perspective: 1200px;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  background: rgba(12, 14, 24, 0.82);
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  touch-action: pan-y;
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+  animation-fill-mode: both;
+  will-change: transform, opacity;
+  cursor: grab;
+  flex: 1;
+  min-height: 0;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.card--enter {
+  animation-name: cardEnter;
+}
+
+.card--locked {
+  pointer-events: none;
+}
+
+.card--dragging {
+  cursor: grabbing;
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.45);
+}
+
+.card-image {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-body {
+  margin-top: auto;
+  padding: 18px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: none;
+  flex-shrink: 0;
+  color: #f1f3ff;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.55);
+}
+
+.card-body h1 {
+  margin: 0;
+  font-size: 1.45rem;
+}
+
+.card-body p {
+  margin: 0;
+  line-height: 1.45;
+  color: rgba(248, 249, 255, 0.88);
+  font-size: 0.98rem;
+}
+
+.gesture-hints {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.hint {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  text-align: center;
+  letter-spacing: 0.02em;
+  color: rgba(248, 249, 255, 0.7);
+  text-transform: uppercase;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.hint--disabled {
+  opacity: 0.45;
+}
+
+.hint::before {
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.hint-left::before {
+  content: '\2190';
+}
+
+.hint-right::before {
+  content: '\2192';
+}
+
+.hint--active {
+  transform: translateY(-2px);
+  color: #f8f9ff;
+}
+
+.hint-left.hint--active {
+  background: rgba(255, 107, 107, 0.35);
+}
+
+.hint-right.hint--active {
+  background: rgba(72, 202, 228, 0.35);
+}
+
+.card-image--placeholder {
+  background: linear-gradient(135deg, #2d7ff9, #5ac4ff);
+}
+
+.bottom-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.reset {
+  background: rgba(255, 255, 255, 0.12);
+  color: #f8f9ff;
+  border: none;
+  border-radius: 16px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.status {
+  min-height: 1.4em;
+  font-size: 0.95rem;
+  color: rgba(248, 249, 255, 0.9);
+}
+
+@media (min-width: 600px) {
+  body {
+    background: radial-gradient(circle at top, #2c3455, #141722 60%);
+  }
+}
+
+@keyframes cardEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0) rotateY(-12deg) scale(0.94);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotateY(0) scale(1);
+  }
+}
+
