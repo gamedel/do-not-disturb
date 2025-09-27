@@ -57,8 +57,20 @@
         </div>
       </div>
       <div class="gesture-hints">
-        <div class="hint hint-left" id="hint-left" aria-label="Свайп влево"></div>
-        <div class="hint hint-right" id="hint-right" aria-label="Свайп вправо"></div>
+        <div class="hint hint-left" id="hint-left" aria-label="Свайп влево">
+          <span class="hint__arrow" aria-hidden="true"></span>
+          <span class="hint__text">
+            <span class="hint__direction"></span>
+            <span class="hint__label"></span>
+          </span>
+        </div>
+        <div class="hint hint-right" id="hint-right" aria-label="Свайп вправо">
+          <span class="hint__text">
+            <span class="hint__direction"></span>
+            <span class="hint__label"></span>
+          </span>
+          <span class="hint__arrow" aria-hidden="true"></span>
+        </div>
       </div>
     </main>
     <footer class="bottom-bar">

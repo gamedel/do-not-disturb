@@ -39,6 +39,11 @@ const elements = {
   resourceBars: Array.from(document.querySelectorAll('.resource')),
 };
 
+elements.hintLeftDirection = elements.hintLeft.querySelector('.hint__direction');
+elements.hintLeftLabel = elements.hintLeft.querySelector('.hint__label');
+elements.hintRightDirection = elements.hintRight.querySelector('.hint__direction');
+elements.hintRightLabel = elements.hintRight.querySelector('.hint__label');
+
 const cardViews = {
   current: {
     card: elements.card,
@@ -166,13 +171,28 @@ function clearHintActive() {
 }
 
 function setHintContent(element, directionLabel, actionLabel = '') {
+  const directionSpan =
+    element === elements.hintLeft
+      ? elements.hintLeftDirection
+      : element === elements.hintRight
+      ? elements.hintRightDirection
+      : element.querySelector('.hint__direction');
+  const labelSpan =
+    element === elements.hintLeft
+      ? elements.hintLeftLabel
+      : element === elements.hintRight
+      ? elements.hintRightLabel
+      : element.querySelector('.hint__label');
   const trimmedAction = actionLabel?.trim?.() ?? '';
-  const labelText = trimmedAction ? `${directionLabel}: ${trimmedAction}` : directionLabel;
-  if (trimmedAction) {
-    element.dataset.label = trimmedAction;
-  } else {
-    delete element.dataset.label;
+  if (directionSpan) {
+    directionSpan.textContent = trimmedAction
+      ? `${directionLabel}:`
+      : directionLabel;
   }
+  if (labelSpan) {
+    labelSpan.textContent = trimmedAction;
+  }
+  const labelText = trimmedAction ? `${directionLabel}: ${trimmedAction}` : directionLabel;
   element.setAttribute('aria-label', labelText);
   if (trimmedAction) {
     element.title = labelText;
@@ -594,6 +614,7 @@ function clamp(value, min, max) {
 function playSwipeAnimation(cardElement, direction) {
   return new Promise((resolve) => {
     const target = cardElement || elements.card;
+    const isFlyingCard = target?.classList?.contains?.('card--flying');
     const computedStyle = window.getComputedStyle(target);
     const startTransform = target.style.transform || computedStyle.transform || 'none';
     const startOpacity = parseFloat(target.style.opacity || computedStyle.opacity || '1');
@@ -614,9 +635,11 @@ function playSwipeAnimation(cardElement, direction) {
       target.style.transform = `translate3d(${offsetX}px, ${offsetY}px, ${offsetZ}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotate(${rotateZ}deg) scale(0.78)`;
       target.style.opacity = '0';
       setTimeout(() => {
-        target.style.transition = '';
-        target.style.transform = '';
-        target.style.opacity = '';
+        if (!isFlyingCard) {
+          target.style.transition = '';
+          target.style.transform = '';
+          target.style.opacity = '';
+        }
         target.style.transformOrigin = previousOrigin;
         resolve();
       }, 580);
@@ -652,30 +675,37 @@ function playSwipeAnimation(cardElement, direction) {
     let settled = false;
     let failSafeTimeout = null;
 
-    const cleanup = () => {
+    const cleanup = ({ keepFinalState = false } = {}) => {
       if (settled) return;
       settled = true;
       if (failSafeTimeout !== null) {
         clearTimeout(failSafeTimeout);
       }
-      try {
-        animation.cancel();
-      } catch (error) {
-        // Some browsers may throw if the animation is already finished.
+      if (!keepFinalState) {
+        try {
+          animation.cancel();
+        } catch (error) {
+          // Some browsers may throw if the animation is already finished.
+        }
       }
-      target.style.transition = '';
-      target.style.transform = '';
-      target.style.opacity = '';
+      if (!keepFinalState || !isFlyingCard) {
+        target.style.transition = '';
+        target.style.transform = '';
+        target.style.opacity = '';
+      }
       target.style.transformOrigin = previousOrigin;
       resolve();
     };
 
-    failSafeTimeout = window.setTimeout(() => cleanup(), 800);
+    failSafeTimeout = window.setTimeout(() => cleanup({ keepFinalState: false }), 800);
 
-    animation.addEventListener('finish', cleanup, { once: true });
-    animation.addEventListener('cancel', cleanup, { once: true });
+    animation.addEventListener('finish', () => cleanup({ keepFinalState: isFlyingCard }), { once: true });
+    animation.addEventListener('cancel', () => cleanup({ keepFinalState: false }), { once: true });
     if (typeof animation.finished?.then === 'function') {
-      animation.finished.then(() => cleanup(), () => cleanup());
+      animation.finished.then(
+        () => cleanup({ keepFinalState: isFlyingCard }),
+        () => cleanup({ keepFinalState: false })
+      );
     }
   });
 }
