@@ -171,11 +171,6 @@ body {
   transform: translateY(14px) scale(0.96);
 }
 
-.card--flying {
-  z-index: 3;
-  pointer-events: none;
-}
-
 .card--enter {
   animation-name: cardEnter;
 }
@@ -240,31 +235,31 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  display: grid;
-  grid-template-rows: 1fr auto;
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  row-gap: 12px;
+  gap: 10px;
   color: rgba(248, 249, 255, 0.72);
   font-size: 0.95rem;
   text-align: center;
-  max-width: 150px;
+  max-width: 160px;
   pointer-events: none;
   z-index: 4;
   opacity: 0.85;
   transition: color 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
-  padding: 0 6px 14px;
+  padding: 0 4px;
   transform: scale(1);
   transform-origin: center;
 }
 
 .swipe-indicator--left {
-  left: 14px;
+  left: 4px;
 }
 
 .swipe-indicator--right {
-  right: 14px;
+  right: 4px;
 }
 
 .swipe-indicator__arrow {
@@ -277,7 +272,7 @@ body {
   font-size: 1rem;
   color: inherit;
   opacity: 0.82;
-  align-self: stretch;
+  margin: 0;
 }
 
 .swipe-indicator__label:empty {

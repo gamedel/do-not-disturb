@@ -515,63 +515,74 @@ async function handleChoice(side) {
   isAnimating = true;
   disableChoices(true);
 
-  const flyingCard = createFlyingCardClone();
-  elements.card.style.transition = '';
-  elements.card.style.transform = '';
-  elements.card.style.opacity = '';
+  const cardElement = elements.card;
+  cardElement.style.transition = '';
+  cardElement.style.transform = '';
+  cardElement.style.opacity = '';
+
+  let incomingCard = null;
+  let upcomingPreviewCard = null;
+  let postAnimationAction = null;
+
+  applyEffects(choice.effects);
+  applyFlags(choice.flags_set);
+  applyDeckChanges(choice.adds, choice.removes);
+
+  state.day += 1;
+  updateResources();
+
+  const defeated = checkDefeat();
+
+  if (defeated || state.gameOver) {
+    nextCardId = null;
+    updatePreviewCardView(null);
+    postAnimationAction = () => {
+      cardElement.style.visibility = '';
+      renderCard({ skipAnimation: true });
+    };
+  } else {
+    const nextCurrentId = pullNextCardId();
+    const previewId = peekNextCardId();
+    nextCardId = previewId;
+    incomingCard = nextCurrentId ? cardMap.get(nextCurrentId) : null;
+    upcomingPreviewCard = previewId ? cardMap.get(previewId) : null;
+
+    if (incomingCard) {
+      state.currentCardId = nextCurrentId;
+      updatePreviewCardView(incomingCard);
+      postAnimationAction = () => {
+        cardElement.style.visibility = '';
+        setCardContent(cardViews.current, incomingCard);
+        updateHintLabels(incomingCard);
+        elements.status.textContent = `День ${state.day}`;
+        updatePreviewCardView(upcomingPreviewCard);
+        disableChoices(false);
+        saveState();
+        playCardEnterAnimation();
+      };
+    } else {
+      updatePreviewCardView(null);
+      postAnimationAction = () => {
+        cardElement.style.visibility = '';
+        showNoCardsState({ skipAnimation: true });
+      };
+    }
+  }
 
   try {
-    applyEffects(choice.effects);
-    applyFlags(choice.flags_set);
-    applyDeckChanges(choice.adds, choice.removes);
+    await playSwipeAnimation(cardElement, side);
+  } catch (error) {
+    console.warn('Swipe animation did not finish as expected', error);
+  }
 
-    state.day += 1;
-    updateResources();
-
-    if (checkDefeat()) {
-      renderCard({ skipAnimation: true });
-    } else {
-      state.currentCardId = null;
-      renderCard({ skipAnimation: true });
-    }
-
-    try {
-      await playSwipeAnimation(flyingCard, side);
-    } catch (error) {
-      console.warn('Swipe animation did not finish as expected', error);
-    }
+  try {
+    postAnimationAction?.();
   } finally {
-    if (flyingCard?.parentNode) {
-      flyingCard.parentNode.removeChild(flyingCard);
+    if (cardElement) {
+      cardElement.style.visibility = '';
     }
-    playCardEnterAnimation();
-    disableChoices(state.gameOver);
     isAnimating = false;
   }
-}
-
-function createFlyingCardClone() {
-  const baseCard = elements.card;
-  if (!baseCard || !elements.cardStack) return null;
-  const clone = baseCard.cloneNode(true);
-  clone.removeAttribute('id');
-  clone.removeAttribute('aria-live');
-  clone.setAttribute('aria-hidden', 'true');
-  clone.classList.add('card--flying');
-  clone.querySelectorAll('[id]').forEach((node) => node.removeAttribute('id'));
-  const computedStyle = window.getComputedStyle(baseCard);
-  clone.style.position = 'absolute';
-  clone.style.inset = '0';
-  clone.style.margin = '0';
-  clone.style.pointerEvents = 'none';
-  clone.style.transition = 'none';
-  clone.style.transform = baseCard.style.transform || computedStyle.transform || 'none';
-  clone.style.opacity = baseCard.style.opacity || computedStyle.opacity || '1';
-  clone.style.transformOrigin = baseCard.style.transformOrigin || computedStyle.transformOrigin || '';
-  clone.style.zIndex = '5';
-  clone.style.willChange = 'transform, opacity';
-  elements.cardStack.appendChild(clone);
-  return clone;
 }
 
 function applyEffects(effects = {}) {
@@ -629,7 +640,11 @@ function clamp(value, min, max) {
 function playSwipeAnimation(cardElement, direction) {
   return new Promise((resolve) => {
     const target = cardElement || elements.card;
-    const isFlyingCard = target?.classList?.contains?.('card--flying');
+    if (!target) {
+      resolve();
+      return;
+    }
+
     const computedStyle = window.getComputedStyle(target);
     const startTransform = target.style.transform || computedStyle.transform || 'none';
     const startOpacity = parseFloat(target.style.opacity || computedStyle.opacity || '1');
@@ -641,6 +656,15 @@ function playSwipeAnimation(cardElement, direction) {
     const tiltX = direction === 'left' ? 18 : -18;
     const previousOrigin = target.style.transformOrigin;
 
+    const finalize = () => {
+      target.style.visibility = 'hidden';
+      target.style.transition = '';
+      target.style.transform = '';
+      target.style.opacity = '';
+      target.style.transformOrigin = previousOrigin;
+      resolve();
+    };
+
     if (typeof target.animate !== 'function') {
       const rotateZ = direction === 'left' ? -36 : 36;
       const offsetY = -110;
@@ -649,28 +673,7 @@ function playSwipeAnimation(cardElement, direction) {
       target.style.transformOrigin = '50% 60%';
       target.style.transform = `translate3d(${offsetX}px, ${offsetY}px, ${offsetZ}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotate(${rotateZ}deg) scale(0.78)`;
       target.style.opacity = '0';
-      setTimeout(() => {
-        if (!isFlyingCard) {
-          target.style.transition = '';
-          target.style.transform = '';
-          target.style.opacity = '';
-        }
-        target.style.transformOrigin = previousOrigin;
-        if (isFlyingCard) {
-          target.style.visibility = 'hidden';
-          target.style.opacity = '0';
-          target.style.pointerEvents = 'none';
-          target.style.display = 'none';
-          if (target.parentNode) {
-            requestAnimationFrame(() => {
-              if (target.parentNode) {
-                target.parentNode.removeChild(target);
-              }
-            });
-          }
-        }
-        resolve();
-      }, 580);
+      window.setTimeout(finalize, 580);
       return;
     }
 
@@ -703,50 +706,21 @@ function playSwipeAnimation(cardElement, direction) {
     let settled = false;
     let failSafeTimeout = null;
 
-    const cleanup = ({ keepFinalState = false } = {}) => {
+    const cleanup = () => {
       if (settled) return;
       settled = true;
       if (failSafeTimeout !== null) {
         clearTimeout(failSafeTimeout);
       }
-      if (!keepFinalState) {
-        try {
-          animation.cancel();
-        } catch (error) {
-          // Some browsers may throw if the animation is already finished.
-        }
-      }
-      if (!keepFinalState || !isFlyingCard) {
-        target.style.transition = '';
-        target.style.transform = '';
-        target.style.opacity = '';
-      }
-      target.style.transformOrigin = previousOrigin;
-      if (isFlyingCard) {
-        target.style.visibility = 'hidden';
-        target.style.opacity = '0';
-        target.style.pointerEvents = 'none';
-        target.style.display = 'none';
-        if (target.parentNode) {
-          requestAnimationFrame(() => {
-            if (target.parentNode) {
-              target.parentNode.removeChild(target);
-            }
-          });
-        }
-      }
-      resolve();
+      finalize();
     };
 
-    failSafeTimeout = window.setTimeout(() => cleanup({ keepFinalState: false }), 800);
+    failSafeTimeout = window.setTimeout(cleanup, 820);
 
-    animation.addEventListener('finish', () => cleanup({ keepFinalState: isFlyingCard }), { once: true });
-    animation.addEventListener('cancel', () => cleanup({ keepFinalState: false }), { once: true });
+    animation.addEventListener('finish', cleanup, { once: true });
+    animation.addEventListener('cancel', cleanup, { once: true });
     if (typeof animation.finished?.then === 'function') {
-      animation.finished.then(
-        () => cleanup({ keepFinalState: isFlyingCard }),
-        () => cleanup({ keepFinalState: false })
-      );
+      animation.finished.then(cleanup, cleanup);
     }
   });
 }
