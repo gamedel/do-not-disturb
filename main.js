@@ -764,32 +764,13 @@ function playCardEnterAnimation() {
   cardElement.classList.remove('card--dragging');
   clearHintActive();
 
-  cardElement.classList.remove('card--enter');
-  void cardElement.offsetWidth;
-  cardElement.classList.add('card--enter');
+  if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+    return new Promise((resolve) => {
+      window.requestAnimationFrame(() => resolve());
+    });
+  }
 
-  return new Promise((resolve) => {
-    let finished = false;
-
-    const cleanup = () => {
-      if (finished) return;
-      finished = true;
-      cardElement.classList.remove('card--enter');
-      resolve();
-    };
-
-    const handleAnimationEnd = (event) => {
-      if (event.target !== cardElement) return;
-      cardElement.removeEventListener('animationend', handleAnimationEnd);
-      cleanup();
-    };
-
-    cardElement.addEventListener('animationend', handleAnimationEnd);
-    window.setTimeout(() => {
-      cardElement.removeEventListener('animationend', handleAnimationEnd);
-      cleanup();
-    }, 700);
-  });
+  return Promise.resolve();
 }
 
 function resetGame() {
