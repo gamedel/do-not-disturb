@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'dnd-state-v1';
-const RESOURCE_KEYS = ['service', 'revenue', 'order', 'burnout'];
+const RESOURCE_KEYS = ['service', 'revenue', 'order', 'energy'];
 const DEFAULT_RESOURCE_VALUE = 5;
 const RESOURCE_MIN = 0;
 const RESOURCE_MAX = 10;
@@ -34,10 +34,10 @@ const DEFEAT_SCENARIOS = {
     statusMessage: 'Порядок исчерпан. Запустите новую смену.',
     hint: 'Запустите новую смену',
   },
-  burnout: {
-    title: 'Вы перегорели',
+  energy: {
+    title: 'Запас сил на нуле',
     text: 'Команда синхронно выключила телефоны, а кофемашина просит отпуск. Дайте всем отдых и начните смену заново.',
-    statusMessage: 'Выгорание достигло предела. Запустите новую смену.',
+    statusMessage: 'Запас сил исчерпан. Запустите новую смену.',
     hint: 'Запустите новую смену',
   },
   default: {
@@ -383,6 +383,17 @@ function loadState() {
       }
       if (!parsed.gameOver) {
         parsed.defeatReason = null;
+      }
+      if (parsed.resources && typeof parsed.resources === 'object') {
+        if ('burnout' in parsed.resources && !('energy' in parsed.resources)) {
+          parsed.resources.energy = parsed.resources.burnout;
+          delete parsed.resources.burnout;
+        }
+        RESOURCE_KEYS.forEach((key) => {
+          if (typeof parsed.resources[key] !== 'number') {
+            parsed.resources[key] = DEFAULT_RESOURCE_VALUE;
+          }
+        });
       }
     }
     return parsed;
@@ -741,8 +752,8 @@ function translateResource(key) {
       return 'Доход';
     case 'order':
       return 'Порядок';
-    case 'burnout':
-      return 'Выгорание';
+    case 'energy':
+      return 'Запас сил';
     default:
       return key;
   }

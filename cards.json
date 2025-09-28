@@ -1,722 +1,1052 @@
 [
   {
-    "id": "overbook_001",
-    "title": "Двойное бронирование",
-    "text": "Гость и гость из приложения на один номер.",
-    "image": "assets/cards/test5.png",
-    "tags": [
-      "overbook",
-      "night"
-    ],
+    "id": "double_booking",
+    "title": "Двойное бронирование.",
+    "text": "У стойки спорят двое — дама в шляпе и пожилой мужчина с тростью. В программе значится только дама.",
+    "image": "",
+    "tags": [],
     "choices": {
       "left": {
-        "label": "По регламенту",
+        "label": "Прогнать пожилого мужчину",
         "effects": {
-          "service": -1,
+          "service": -2,
           "revenue": 0,
-          "order": 2,
-          "burnout": 0
+          "order": 1,
+          "energy": 0
         },
-        "adds": [
-          "walk_undone_008"
-        ],
+        "adds": [],
         "removes": [],
         "flags_set": {}
       },
       "right": {
-        "label": "Апгрейд + walk",
+        "label": "Предоставить мужчине лучшую комнату",
         "effects": {
           "service": 2,
           "revenue": -1,
           "order": -1,
-          "burnout": 0
+          "energy": -1
         },
         "adds": [],
         "removes": [],
-        "flags_set": {
-          "walk_used": true
-        }
+        "flags_set": {}
       }
     },
-    "conditions": {
-      "day_min": 1,
-      "day_max": 30,
-      "requires_flags": {},
-      "forbid_flags": {}
-    },
+    "conditions": null,
     "chain_id": null
   },
   {
-    "id": "no_id_002",
-    "title": "Гость без паспорта",
-    "text": "Нужно заселить постоянного гостя, документы задержались.",
+    "id": "early_check_in",
+    "title": "Ранний заезд.",
+    "text": "Уставший пассажир задремал на диване. Номер ещё не убран.",
     "image": "",
-    "tags": [
-      "frontdesk",
-      "loyalty"
-    ],
+    "tags": [],
     "choices": {
       "left": {
-        "label": "Отказать",
+        "label": "Заселить за доплату",
         "effects": {
-          "service": -2,
-          "revenue": -1,
-          "order": 2,
-          "burnout": 0
+          "service": 0,
+          "revenue": 1,
+          "order": 1,
+          "energy": 0
         },
         "adds": [],
         "removes": [],
         "flags_set": {}
       },
       "right": {
-        "label": "Временный допуск",
+        "label": "Дать комнату ожидания и чай",
+        "effects": {
+          "service": 1,
+          "revenue": -1,
+          "order": -1,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "guest_no_passport",
+    "title": "Гость без паспорта.",
+    "text": "Мужчина показывает билеты и подтверждение, паспорта нет — говорит, потерял.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Отказать во въезде",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 2,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Заселить по временному пропуску с залогом",
         "effects": {
           "service": 1,
           "revenue": 1,
           "order": -2,
-          "burnout": 1
+          "energy": -1
         },
-        "adds": [
-          "unexpected_audit_012"
-        ],
+        "adds": [],
         "removes": [],
-        "flags_set": {
-          "guest_pending_id": true
-        }
+        "flags_set": {}
       }
     },
-    "conditions": {
-      "day_min": 1,
-      "day_max": 20,
-      "requires_flags": {},
-      "forbid_flags": {}
-    },
+    "conditions": null,
     "chain_id": null
   },
   {
-    "id": "vip_arrival_003",
-    "title": "VIP-приезд",
-    "text": "Коллеги из маркетинга обещают сюрпризы гостю.",
+    "id": "noisy_room",
+    "title": "Шумный номер.",
+    "text": "С пятого этажа гремит музыка, соседи звонят на стойку.",
     "image": "",
-    "tags": [
-      "vip",
-      "marketing"
-    ],
+    "tags": [],
     "choices": {
       "left": {
-        "label": "Все по чек-листу",
+        "label": "Вызвать охранника и оформить нарушение тишины",
         "effects": {
-          "service": 1,
+          "service": -1,
           "revenue": 0,
-          "order": 1,
-          "burnout": 1
+          "order": 2,
+          "energy": 0
         },
-        "adds": [
-          "loyalty_push_013"
-        ],
+        "adds": [],
         "removes": [],
-        "flags_set": {
-          "vip_served": true
-        }
+        "flags_set": {}
       },
       "right": {
-        "label": "Попросить маркетинг",
+        "label": "Переселить пострадавших и дать компенсацию",
         "effects": {
           "service": 2,
           "revenue": -1,
-          "order": 0,
-          "burnout": -1
+          "order": -1,
+          "energy": -1
         },
         "adds": [],
         "removes": [],
-        "flags_set": {
-          "marketing_debt": true
-        }
+        "flags_set": {}
       }
     },
-    "conditions": {
-      "day_min": 1,
-      "day_max": 25,
-      "requires_flags": {},
-      "forbid_flags": {}
-    },
+    "conditions": null,
     "chain_id": null
   },
   {
-    "id": "housekeeping_delay_004",
-    "title": "Задержка уборки",
-    "text": "Этаж не успел подготовиться к заселению группы.",
+    "id": "smoking_room",
+    "title": "Курение в номере.",
+    "text": "В коридор тянет дымом, в номере пепельница с окурком.",
     "image": "",
-    "tags": [
-      "housekeeping",
-      "rush"
-    ],
+    "tags": [],
     "choices": {
       "left": {
-        "label": "Помочь лично",
+        "label": "Назначить штраф и уборку",
         "effects": {
-          "service": 1,
-          "revenue": 0,
+          "service": -1,
+          "revenue": 2,
           "order": 1,
-          "burnout": 2
+          "energy": -1
         },
         "adds": [],
         "removes": [],
-        "flags_set": {
-          "manager_helped": true
-        }
+        "flags_set": {}
       },
       "right": {
-        "label": "Перенести заселение",
+        "label": "Ограничиться письменным предупреждением",
+        "effects": {
+          "service": 1,
+          "revenue": 0,
+          "order": -1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "elevator_out",
+    "title": "Лифт не работает.",
+    "text": "Табличка «не работает», люди с чемоданами застыли у лестницы.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Блокировать заселение верхних этажей",
         "effects": {
           "service": -1,
           "revenue": -1,
           "order": 2,
-          "burnout": -1
-        },
-        "adds": [
-          "late_checkout_011"
-        ],
-        "removes": [],
-        "flags_set": {}
-      }
-    },
-    "conditions": {
-      "day_min": 2,
-      "day_max": 30,
-      "requires_flags": {},
-      "forbid_flags": {}
-    },
-    "chain_id": null
-  },
-  {
-    "id": "spa_overflow_005",
-    "title": "Переполненный спа",
-    "text": "Гости из партнерского отеля просят слоты.",
-    "image": "",
-    "tags": [
-      "spa",
-      "partner"
-    ],
-    "choices": {
-      "left": {
-        "label": "Отказать партнёру",
-        "effects": {
-          "service": -1,
-          "revenue": -1,
-          "order": 1,
-          "burnout": 0
+          "energy": 0
         },
         "adds": [],
         "removes": [],
         "flags_set": {}
       },
       "right": {
-        "label": "Открыть ночь",
+        "label": "Организовать помощь с багажом",
         "effects": {
           "service": 2,
-          "revenue": 2,
-          "order": -2,
-          "burnout": 1
+          "revenue": 0,
+          "order": 0,
+          "energy": -2
         },
-        "adds": [
-          "night_complaint_007"
-        ],
+        "adds": [],
         "removes": [],
-        "flags_set": {
-          "spa_night": true
-        }
+        "flags_set": {}
       }
     },
-    "conditions": {
-      "day_min": 3,
-      "day_max": 25,
-      "requires_flags": {},
-      "forbid_flags": {}
-    },
+    "conditions": null,
     "chain_id": null
   },
   {
-    "id": "maintenance_leak_006",
-    "title": "Протечка в номере",
-    "text": "Гость сообщает о влажном потолке на пятом этаже.",
+    "id": "no_hot_water",
+    "title": "Нет горячей воды.",
+    "text": "До утра только холодная. Гости негодуют у стойки.",
     "image": "",
-    "tags": [
-      "maintenance"
-    ],
+    "tags": [],
     "choices": {
       "left": {
-        "label": "Закрыть этаж",
+        "label": "Открыть души спортзала и выдать наборы",
+        "effects": {
+          "service": 2,
+          "revenue": -1,
+          "order": 0,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Сообщить и ждать подрядчика",
+        "effects": {
+          "service": -2,
+          "revenue": 0,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "ceiling_leak",
+    "title": "Протечка потолка.",
+    "text": "В 514 на потолке расползается мокрое пятно, капли падают на пол.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Закрыть номер и часть этажа",
         "effects": {
           "service": -1,
           "revenue": -2,
-          "order": 3,
-          "burnout": 0
-        },
-        "adds": [],
-        "removes": [
-          "spa_overflow_005"
-        ],
-        "flags_set": {
-          "floor_closed": true
-        }
-      },
-      "right": {
-        "label": "Вызвать подрядчика",
-        "effects": {
-          "service": 1,
-          "revenue": -1,
-          "order": 1,
-          "burnout": 1
-        },
-        "adds": [
-          "conference_request_010"
-        ],
-        "removes": [],
-        "flags_set": {
-          "contractor_called": true
-        }
-      }
-    },
-    "conditions": {
-      "day_min": 2,
-      "day_max": 28,
-      "requires_flags": {},
-      "forbid_flags": {}
-    },
-    "chain_id": null
-  },
-  {
-    "id": "night_complaint_007",
-    "title": "Ночная жалоба",
-    "text": "Гость не смог уснуть из-за спа после полуночи.",
-    "image": "",
-    "tags": [
-      "night",
-      "complaint"
-    ],
-    "choices": {
-      "left": {
-        "label": "Компенсация",
-        "effects": {
-          "service": 2,
-          "revenue": -2,
-          "order": 0,
-          "burnout": 1
-        },
-        "adds": [],
-        "removes": [],
-        "flags_set": {
-          "night_compensated": true
-        }
-      },
-      "right": {
-        "label": "Объяснить правила",
-        "effects": {
-          "service": -1,
-          "revenue": 0,
-          "order": 1,
-          "burnout": 0
-        },
-        "adds": [],
-        "removes": [],
-        "flags_set": {
-          "night_warning": true
-        }
-      }
-    },
-    "conditions": {
-      "day_min": 4,
-      "day_max": 35,
-      "requires_flags": {
-        "spa_night": true
-      },
-      "forbid_flags": {}
-    },
-    "chain_id": null
-  },
-  {
-    "id": "walk_undone_008",
-    "title": "Walk сорвался",
-    "text": "Партнёрский отель не принял гостя, он снова у стойки.",
-    "image": "",
-    "tags": [
-      "overbook",
-      "partner"
-    ],
-    "choices": {
-      "left": {
-        "label": "Искать другой отель",
-        "effects": {
-          "service": -1,
-          "revenue": -1,
           "order": 2,
-          "burnout": 1
+          "energy": 0
         },
         "adds": [],
         "removes": [],
         "flags_set": {}
       },
       "right": {
-        "label": "Предложить лобби",
+        "label": "Срочно вызвать ночную бригаду",
+        "effects": {
+          "service": 1,
+          "revenue": -1,
+          "order": 1,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "unexpected_vip",
+    "title": "Неожиданный важный гость.",
+    "text": "Машина у входа, корзина фруктов готова, «особые пожелания» на планшете.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Апгрейд и комплимент",
+        "effects": {
+          "service": 2,
+          "revenue": -1,
+          "order": 0,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Строго по стандарту",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "upgrade_for_review",
+    "title": "Просьба об апгрейде «за отзыв».",
+    "text": "Молодой человек снимает на камеру и просит апгрейд «ради публикации».",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Согласиться на обмен",
+        "effects": {
+          "service": 2,
+          "revenue": -1,
+          "order": 0,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Отказать и оставить стандарт",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "card_declined",
+    "title": "Карта не проходит.",
+    "text": "Терминал мигает красным, гость протягивает вторую карту.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Взять депозит/заморозку",
+        "effects": {
+          "service": -1,
+          "revenue": 1,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Заселить «на доверии»",
+        "effects": {
+          "service": 1,
+          "revenue": 0,
+          "order": -2,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "refund_for_noise",
+    "title": "Требование возврата за шум.",
+    "text": "Письмо с жалобой «не спал до трёх», просят вернуть оплату.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Частично вернуть и извиниться",
+        "effects": {
+          "service": 1,
+          "revenue": -1,
+          "order": 0,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Отказать, сославшись на правила",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "guest_with_dog",
+    "title": "Гость с собакой.",
+    "text": "Спокойная собака у стойки, документы на животное в порядке.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Заселить на «пет-этаж» и взять плату",
+        "effects": {
+          "service": 1,
+          "revenue": 1,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Отказать по политике",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "higher_quieter",
+    "title": "«Хочу повыше и тише».",
+    "text": "Гость просит номер подальше от лифта.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Переселить сейчас",
         "effects": {
           "service": 1,
           "revenue": 0,
           "order": -1,
-          "burnout": 1
-        },
-        "adds": [
-          "staff_shortage_009"
-        ],
-        "removes": [],
-        "flags_set": {
-          "lobby_guest": true
-        }
-      }
-    },
-    "conditions": {
-      "day_min": 2,
-      "day_max": 25,
-      "requires_flags": {},
-      "forbid_flags": {
-        "walk_used": true
-      }
-    },
-    "chain_id": null
-  },
-  {
-    "id": "staff_shortage_009",
-    "title": "Не хватает смены",
-    "text": "Нужно срочно закрыть утреннюю стойку.",
-    "image": "",
-    "tags": [
-      "staff",
-      "schedule"
-    ],
-    "choices": {
-      "left": {
-        "label": "Заменить собой",
-        "effects": {
-          "service": 1,
-          "revenue": 0,
-          "order": 1,
-          "burnout": 2
+          "energy": -1
         },
         "adds": [],
         "removes": [],
-        "flags_set": {
-          "manager_helped": true
-        }
+        "flags_set": {}
       },
       "right": {
-        "label": "Сократить услуги",
-        "effects": {
-          "service": -2,
-          "revenue": -1,
-          "order": 2,
-          "burnout": -1
-        },
-        "adds": [],
-        "removes": [],
-        "flags_set": {
-          "services_limited": true
-        }
-      }
-    },
-    "conditions": {
-      "day_min": 3,
-      "day_max": 28,
-      "requires_flags": {
-        "lobby_guest": true
-      },
-      "forbid_flags": {}
-    },
-    "chain_id": null
-  },
-  {
-    "id": "conference_request_010",
-    "title": "Запрос конференции",
-    "text": "Компания хочет забронировать зал после ремонта.",
-    "image": "",
-    "tags": [
-      "conference"
-    ],
-    "choices": {
-      "left": {
-        "label": "Сделать скидку",
-        "effects": {
-          "service": 1,
-          "revenue": -1,
-          "order": 1,
-          "burnout": 0
-        },
-        "adds": [
-          "wedding_party_015"
-        ],
-        "removes": [],
-        "flags_set": {
-          "conference_booked": true
-        }
-      },
-      "right": {
-        "label": "Полная цена",
+        "label": "Перенести на завтра",
         "effects": {
           "service": 0,
-          "revenue": 2,
-          "order": 0,
-          "burnout": 1
-        },
-        "adds": [],
-        "removes": [],
-        "flags_set": {}
-      }
-    },
-    "conditions": {
-      "day_min": 4,
-      "day_max": 40,
-      "requires_flags": {
-        "contractor_called": true
-      },
-      "forbid_flags": {}
-    },
-    "chain_id": null
-  },
-  {
-    "id": "late_checkout_011",
-    "title": "Поздний выезд",
-    "text": "Гости просят остаться до вечера, иначе пропадёт рейс.",
-    "image": "",
-    "tags": [
-      "frontdesk",
-      "guest"
-    ],
-    "choices": {
-      "left": {
-        "label": "Дать добро",
-        "effects": {
-          "service": 1,
-          "revenue": 1,
-          "order": -2,
-          "burnout": 0
-        },
-        "adds": [],
-        "removes": [],
-        "flags_set": {
-          "late_checkout": true
-        }
-      },
-      "right": {
-        "label": "Взять оплату",
-        "effects": {
-          "service": -1,
-          "revenue": 2,
+          "revenue": 0,
           "order": 1,
-          "burnout": 0
+          "energy": 1
         },
         "adds": [],
         "removes": [],
         "flags_set": {}
       }
     },
-    "conditions": {
-      "day_min": 3,
-      "day_max": 35,
-      "requires_flags": {},
-      "forbid_flags": {}
-    },
+    "conditions": null,
     "chain_id": null
   },
   {
-    "id": "unexpected_audit_012",
-    "title": "Внезапная проверка",
-    "text": "Инспекция запросила документы по заселению.",
+    "id": "child_in_lobby",
+    "title": "Ребёнок один в лобби.",
+    "text": "Мальчик сидит на диване, телефон родителей не отвечает.",
     "image": "",
-    "tags": [
-      "audit"
-    ],
+    "tags": [],
     "choices": {
       "left": {
-        "label": "Сдать всё",
+        "label": "Вызвать охранника и оформить акт",
         "effects": {
           "service": -1,
           "revenue": 0,
           "order": 2,
-          "burnout": 1
+          "energy": 0
         },
         "adds": [],
         "removes": [],
-        "flags_set": {
-          "audit_warn": true
-        }
+        "flags_set": {}
       },
       "right": {
-        "label": "Отправить отчёт",
+        "label": "Посадить в служебную и искать родителей",
         "effects": {
-          "service": 1,
-          "revenue": -1,
-          "order": 1,
-          "burnout": 0
+          "service": 2,
+          "revenue": 0,
+          "order": 0,
+          "energy": -1
         },
         "adds": [],
-        "removes": [
-          "no_id_002"
-        ],
-        "flags_set": {
-          "guest_pending_id": false
-        }
+        "removes": [],
+        "flags_set": {}
       }
     },
-    "conditions": {
-      "day_min": 4,
-      "day_max": 25,
-      "requires_flags": {
-        "guest_pending_id": true
-      },
-      "forbid_flags": {}
-    },
+    "conditions": null,
     "chain_id": null
   },
   {
-    "id": "loyalty_push_013",
-    "title": "Продажа клуба",
-    "text": "Маркетинг просит продвигать новый клуб привилегий.",
+    "id": "group_arrived_early",
+    "title": "Группа приехала раньше.",
+    "text": "Чемоданы в ряд, гид просит хотя бы оставить вещи.",
     "image": "",
-    "tags": [
-      "loyalty",
-      "marketing"
-    ],
+    "tags": [],
     "choices": {
       "left": {
-        "label": "Включить в скрипт",
+        "label": "Открыть камеру хранения и раздать метки",
         "effects": {
           "service": 1,
-          "revenue": 2,
+          "revenue": 0,
+          "order": 1,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Заселять по готовности без формальностей",
+        "effects": {
+          "service": 1,
+          "revenue": 0,
+          "order": -2,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "feeling_unwell",
+    "title": "Плохое самочувствие у лифта.",
+    "text": "Гость побледнел и сел на пол, рядом кнопка вызова.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Вызвать скорую и сопроводить",
+        "effects": {
+          "service": 1,
+          "revenue": 0,
+          "order": 2,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Довести до номера и наблюдать",
+        "effects": {
+          "service": 0,
+          "revenue": 0,
+          "order": -2,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "false_fire_alarm",
+    "title": "Ложная пожарная тревога.",
+    "text": "Сирена щёлкнула и стихла, из кухни пахнет подгорелым тостом.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Провести эвакуацию",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 2,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Проверить локально без эвакуации",
+        "effects": {
+          "service": 0,
+          "revenue": 0,
           "order": -1,
-          "burnout": 1
+          "energy": 1
         },
         "adds": [],
         "removes": [],
-        "flags_set": {
-          "loyalty_pitch": true
-        }
-      },
-      "right": {
-        "label": "Оставить команду",
-        "effects": {
-          "service": 0,
-          "revenue": -1,
-          "order": 1,
-          "burnout": -1
-        },
-        "adds": [],
-        "removes": [],
-        "flags_set": {
-          "marketing_debt": false
-        }
+        "flags_set": {}
       }
     },
-    "conditions": {
-      "day_min": 2,
-      "day_max": 30,
-      "requires_flags": {
-        "vip_served": true
-      },
-      "forbid_flags": {}
-    },
+    "conditions": null,
     "chain_id": null
   },
   {
-    "id": "chef_sick_014",
-    "title": "Шеф заболел",
-    "text": "На завтраке нет главного шеф-повара.",
+    "id": "booking_system_crash",
+    "title": "Сбой программы бронирования.",
+    "text": "Экран завис, очередь у стойки растёт.",
     "image": "",
-    "tags": [
-      "restaurant",
-      "staff"
-    ],
+    "tags": [],
     "choices": {
       "left": {
-        "label": "Сократить меню",
+        "label": "Перейти на бумажные бланки",
         "effects": {
-          "service": -1,
-          "revenue": -1,
+          "service": 0,
+          "revenue": 0,
           "order": 1,
-          "burnout": 0
+          "energy": -1
         },
         "adds": [],
         "removes": [],
         "flags_set": {}
       },
       "right": {
-        "label": "Привлечь су-шефа",
+        "label": "Попросить гостей подождать",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 0,
+          "energy": 1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "standards_check",
+    "title": "Проверка стандартов.",
+    "text": "Незнакомец просит чек-лист и наблюдает за работой стойки.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Работать строго по чек-листу",
+        "effects": {
+          "service": 0,
+          "revenue": 0,
+          "order": 2,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Сделать упор на личный сервис",
         "effects": {
           "service": 2,
           "revenue": -1,
           "order": 0,
-          "burnout": 1
+          "energy": 0
         },
         "adds": [],
         "removes": [],
-        "flags_set": {
-          "chef_cover": true
-        }
+        "flags_set": {}
       }
     },
-    "conditions": {
-      "day_min": 1,
-      "day_max": 40,
-      "requires_flags": {},
-      "forbid_flags": {}
-    },
+    "conditions": null,
     "chain_id": null
   },
   {
-    "id": "wedding_party_015",
-    "title": "Свадебный банкет",
-    "text": "Гости просят позднюю музыку и отдельного координатора.",
+    "id": "minibar_dispute",
+    "title": "Спор по минибару.",
+    "text": "Гость уверяет, что ничего не брал, списание прошло ночью.",
     "image": "",
-    "tags": [
-      "event",
-      "wedding"
-    ],
+    "tags": [],
     "choices": {
       "left": {
-        "label": "Назначить координатора",
+        "label": "Снять спорные позиции",
         "effects": {
-          "service": 2,
-          "revenue": 2,
-          "order": -2,
-          "burnout": 2
+          "service": 1,
+          "revenue": -1,
+          "order": 0,
+          "energy": 0
         },
         "adds": [],
         "removes": [],
-        "flags_set": {
-          "event_overload": true
-        }
+        "flags_set": {}
       },
       "right": {
-        "label": "Ограничить музыку",
+        "label": "Показать фиксацию и взять расписку",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "keycard_issue",
+    "title": "Ключ-карта не открывает.",
+    "text": "Замок у 612 пищит и гаснет, гость машет картой.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Выдать новую карту",
+        "effects": {
+          "service": 1,
+          "revenue": 0,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Поставить заявку технику «позже»",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 0,
+          "energy": 1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "blocked_driveway",
+    "title": "Въезд перекрыт.",
+    "text": "Такси встало поперёк, фургон с поставкой не может заехать.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Вызвать охранника и оформить нарушение",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 2,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Выйти и направить машины вручную",
+        "effects": {
+          "service": 1,
+          "revenue": 0,
+          "order": 0,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "corporate_discount_dispute",
+    "title": "Спор по корпоративной скидке.",
+    "text": "Гость требует тариф компании, письмо без шапки и печати.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Поставить стандарт до подтверждения",
         "effects": {
           "service": -1,
           "revenue": 1,
-          "order": 2,
-          "burnout": -1
+          "order": 1,
+          "energy": 0
         },
         "adds": [],
         "removes": [],
-        "flags_set": {
-          "event_overload": false
-        }
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Провести скидку авансом",
+        "effects": {
+          "service": 1,
+          "revenue": -1,
+          "order": -1,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
       }
     },
-    "conditions": {
-      "day_min": 5,
-      "day_max": 45,
-      "requires_flags": {
-        "conference_booked": true
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "wedding_music",
+    "title": "Свадьба просит музыку до ночи.",
+    "text": "Зал украшен лентами, диджей просит играть до 01:00.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Разрешить с ограничением по этажам",
+        "effects": {
+          "service": 1,
+          "revenue": 1,
+          "order": -1,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
       },
-      "forbid_flags": {}
+      "right": {
+        "label": "Ограничить до 23:00",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 2,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
     },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "late_for_breakfast",
+    "title": "Опоздали на завтрак.",
+    "text": "Пара пришла позже на десять минут, на столе остывают круассаны.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Собрать ланч-бокс",
+        "effects": {
+          "service": 1,
+          "revenue": 0,
+          "order": 0,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Дать купон в бар вместо завтрака",
+        "effects": {
+          "service": 0,
+          "revenue": -1,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "queue_argument",
+    "title": "Ссора в очереди.",
+    "text": "Два чемодана «нос к носу», люди снимают на телефон.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Ввести номерки/электронную очередь",
+        "effects": {
+          "service": 1,
+          "revenue": 0,
+          "order": 1,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Выпустить обоих вне очереди",
+        "effects": {
+          "service": 1,
+          "revenue": 0,
+          "order": -2,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "team_at_limit",
+    "title": "Команда на пределе.",
+    "text": "Сотрудник трет виски, стопка невыполненных отметок растёт.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Дать десятиминутную паузу",
+        "effects": {
+          "service": 0,
+          "revenue": 0,
+          "order": 0,
+          "energy": 2
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Продолжить без перерыва",
+        "effects": {
+          "service": -1,
+          "revenue": 0,
+          "order": 1,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "lost_luggage",
+    "title": "Потерянный багаж.",
+    "text": "Гость без чемодана просит набор на ночь — щётка, футболка, гель.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Продать набор",
+        "effects": {
+          "service": 0,
+          "revenue": 1,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Выдать набор как жест вежливости",
+        "effects": {
+          "service": 2,
+          "revenue": -1,
+          "order": 0,
+          "energy": -1
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "late_checkout",
+    "title": "Поздний выезд.",
+    "text": "Гость просит остаться до вечера, иначе сорвётся встреча.",
+    "image": "",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Оставить бесплатно нельзя — стандартная оплата",
+        "effects": {
+          "service": -1,
+          "revenue": 1,
+          "order": 1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Разрешить без оплаты",
+        "effects": {
+          "service": 1,
+          "revenue": -1,
+          "order": -1,
+          "energy": 0
+        },
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
     "chain_id": null
   }
 ]
