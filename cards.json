@@ -3,7 +3,7 @@
     "id": "double_booking",
     "title": "Двойное бронирование.",
     "text": "У стойки спорят двое — дама в шляпе и пожилой мужчина с тростью. В программе значится только дама.",
-    "image": "",
+    "image": "assets/cards/card1.img",
     "tags": [],
     "choices": {
       "left": {
@@ -38,7 +38,7 @@
     "id": "early_check_in",
     "title": "Ранний заезд.",
     "text": "Уставший пассажир задремал на диване. Номер ещё не убран.",
-    "image": "",
+    "image": "assets/cards/card2.img",
     "tags": [],
     "choices": {
       "left": {
@@ -73,7 +73,7 @@
     "id": "guest_no_passport",
     "title": "Гость без паспорта.",
     "text": "Мужчина показывает билеты и подтверждение, паспорта нет — говорит, потерял.",
-    "image": "",
+    "image": "assets/cards/card3.img",
     "tags": [],
     "choices": {
       "left": {
@@ -108,7 +108,7 @@
     "id": "noisy_room",
     "title": "Шумный номер.",
     "text": "С пятого этажа гремит музыка, соседи звонят на стойку.",
-    "image": "",
+    "image": "assets/cards/card4.img",
     "tags": [],
     "choices": {
       "left": {
@@ -143,7 +143,7 @@
     "id": "smoking_room",
     "title": "Курение в номере.",
     "text": "В коридор тянет дымом, в номере пепельница с окурком.",
-    "image": "",
+    "image": "assets/cards/card5.img",
     "tags": [],
     "choices": {
       "left": {
@@ -178,7 +178,7 @@
     "id": "elevator_out",
     "title": "Лифт не работает.",
     "text": "Табличка «не работает», люди с чемоданами застыли у лестницы.",
-    "image": "",
+    "image": "assets/cards/card6.img",
     "tags": [],
     "choices": {
       "left": {
@@ -213,7 +213,7 @@
     "id": "no_hot_water",
     "title": "Нет горячей воды.",
     "text": "До утра только холодная. Гости негодуют у стойки.",
-    "image": "",
+    "image": "assets/cards/card7.img",
     "tags": [],
     "choices": {
       "left": {
@@ -248,7 +248,7 @@
     "id": "ceiling_leak",
     "title": "Протечка потолка.",
     "text": "В 514 на потолке расползается мокрое пятно, капли падают на пол.",
-    "image": "",
+    "image": "assets/cards/card8.img",
     "tags": [],
     "choices": {
       "left": {
@@ -283,7 +283,7 @@
     "id": "unexpected_vip",
     "title": "Неожиданный важный гость.",
     "text": "Машина у входа, корзина фруктов готова, «особые пожелания» на планшете.",
-    "image": "",
+    "image": "assets/cards/card9.img",
     "tags": [],
     "choices": {
       "left": {
@@ -318,7 +318,7 @@
     "id": "upgrade_for_review",
     "title": "Просьба об апгрейде «за отзыв».",
     "text": "Молодой человек снимает на камеру и просит апгрейд «ради публикации».",
-    "image": "",
+    "image": "assets/cards/card10.img",
     "tags": [],
     "choices": {
       "left": {
@@ -353,7 +353,7 @@
     "id": "card_declined",
     "title": "Карта не проходит.",
     "text": "Терминал мигает красным, гость протягивает вторую карту.",
-    "image": "",
+    "image": "assets/cards/card11.img",
     "tags": [],
     "choices": {
       "left": {
@@ -388,7 +388,7 @@
     "id": "refund_for_noise",
     "title": "Требование возврата за шум.",
     "text": "Письмо с жалобой «не спал до трёх», просят вернуть оплату.",
-    "image": "",
+    "image": "assets/cards/card12.img",
     "tags": [],
     "choices": {
       "left": {
@@ -423,7 +423,7 @@
     "id": "guest_with_dog",
     "title": "Гость с собакой.",
     "text": "Спокойная собака у стойки, документы на животное в порядке.",
-    "image": "",
+    "image": "assets/cards/card13.img",
     "tags": [],
     "choices": {
       "left": {
@@ -458,7 +458,7 @@
     "id": "higher_quieter",
     "title": "«Хочу повыше и тише».",
     "text": "Гость просит номер подальше от лифта.",
-    "image": "",
+    "image": "assets/cards/card14.img",
     "tags": [],
     "choices": {
       "left": {
@@ -493,7 +493,7 @@
     "id": "child_in_lobby",
     "title": "Ребёнок один в лобби.",
     "text": "Мальчик сидит на диване, телефон родителей не отвечает.",
-    "image": "",
+    "image": "assets/cards/card15.img",
     "tags": [],
     "choices": {
       "left": {
@@ -528,7 +528,7 @@
     "id": "group_arrived_early",
     "title": "Группа приехала раньше.",
     "text": "Чемоданы в ряд, гид просит хотя бы оставить вещи.",
-    "image": "",
+    "image": "assets/cards/card16.img",
     "tags": [],
     "choices": {
       "left": {
@@ -563,7 +563,7 @@
     "id": "feeling_unwell",
     "title": "Плохое самочувствие у лифта.",
     "text": "Гость побледнел и сел на пол, рядом кнопка вызова.",
-    "image": "",
+    "image": "assets/cards/card17.img",
     "tags": [],
     "choices": {
       "left": {
@@ -598,7 +598,7 @@
     "id": "false_fire_alarm",
     "title": "Ложная пожарная тревога.",
     "text": "Сирена щёлкнула и стихла, из кухни пахнет подгорелым тостом.",
-    "image": "",
+    "image": "assets/cards/card18.img",
     "tags": [],
     "choices": {
       "left": {
@@ -633,7 +633,7 @@
     "id": "booking_system_crash",
     "title": "Сбой программы бронирования.",
     "text": "Экран завис, очередь у стойки растёт.",
-    "image": "",
+    "image": "assets/cards/card19.img",
     "tags": [],
     "choices": {
       "left": {
@@ -668,7 +668,7 @@
     "id": "standards_check",
     "title": "Проверка стандартов.",
     "text": "Незнакомец просит чек-лист и наблюдает за работой стойки.",
-    "image": "",
+    "image": "assets/cards/card20.img",
     "tags": [],
     "choices": {
       "left": {
@@ -703,7 +703,7 @@
     "id": "minibar_dispute",
     "title": "Спор по минибару.",
     "text": "Гость уверяет, что ничего не брал, списание прошло ночью.",
-    "image": "",
+    "image": "assets/cards/card21.img",
     "tags": [],
     "choices": {
       "left": {
@@ -738,7 +738,7 @@
     "id": "keycard_issue",
     "title": "Ключ-карта не открывает.",
     "text": "Замок у 612 пищит и гаснет, гость машет картой.",
-    "image": "",
+    "image": "assets/cards/card22.img",
     "tags": [],
     "choices": {
       "left": {
@@ -773,7 +773,7 @@
     "id": "blocked_driveway",
     "title": "Въезд перекрыт.",
     "text": "Такси встало поперёк, фургон с поставкой не может заехать.",
-    "image": "",
+    "image": "assets/cards/card23.img",
     "tags": [],
     "choices": {
       "left": {
@@ -808,7 +808,7 @@
     "id": "corporate_discount_dispute",
     "title": "Спор по корпоративной скидке.",
     "text": "Гость требует тариф компании, письмо без шапки и печати.",
-    "image": "",
+    "image": "assets/cards/card24.img",
     "tags": [],
     "choices": {
       "left": {
@@ -843,7 +843,7 @@
     "id": "wedding_music",
     "title": "Свадьба просит музыку до ночи.",
     "text": "Зал украшен лентами, диджей просит играть до 01:00.",
-    "image": "",
+    "image": "assets/cards/card25.img",
     "tags": [],
     "choices": {
       "left": {
@@ -878,7 +878,7 @@
     "id": "late_for_breakfast",
     "title": "Опоздали на завтрак.",
     "text": "Пара пришла позже на десять минут, на столе остывают круассаны.",
-    "image": "",
+    "image": "assets/cards/card26.img",
     "tags": [],
     "choices": {
       "left": {
@@ -913,7 +913,7 @@
     "id": "queue_argument",
     "title": "Ссора в очереди.",
     "text": "Два чемодана «нос к носу», люди снимают на телефон.",
-    "image": "",
+    "image": "assets/cards/card27.img",
     "tags": [],
     "choices": {
       "left": {
@@ -948,7 +948,7 @@
     "id": "team_at_limit",
     "title": "Команда на пределе.",
     "text": "Сотрудник трет виски, стопка невыполненных отметок растёт.",
-    "image": "",
+    "image": "assets/cards/card28.img",
     "tags": [],
     "choices": {
       "left": {
@@ -983,7 +983,7 @@
     "id": "lost_luggage",
     "title": "Потерянный багаж.",
     "text": "Гость без чемодана просит набор на ночь — щётка, футболка, гель.",
-    "image": "",
+    "image": "assets/cards/card29.img",
     "tags": [],
     "choices": {
       "left": {
@@ -1018,7 +1018,7 @@
     "id": "late_checkout",
     "title": "Поздний выезд.",
     "text": "Гость просит остаться до вечера, иначе сорвётся встреча.",
-    "image": "",
+    "image": "assets/cards/card30.img",
     "tags": [],
     "choices": {
       "left": {
