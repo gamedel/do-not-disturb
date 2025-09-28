@@ -58,32 +58,29 @@ body {
   position: relative;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  padding: 6px 8px 8px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto auto;
-  grid-template-areas:
-    'label value'
-    'bar bar';
-  gap: 2px 6px;
+  padding: 8px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
 .resource .label {
-  grid-area: label;
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: rgba(248, 249, 255, 0.78);
+  text-align: center;
+  width: 100%;
 }
 
 .resource .bar {
-  grid-area: bar;
-  width: 100%;
+  width: 68%;
   height: 3px;
   background: rgba(255, 255, 255, 0.12);
   border-radius: 999px;
   overflow: hidden;
-  margin-top: 2px;
+  margin: 0 auto;
 }
 
 .resource .fill {
@@ -93,20 +90,13 @@ body {
   transition: width 0.3s ease;
 }
 
-.resource .value {
-  grid-area: value;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #f8f9ff;
-}
-
 @media (max-width: 380px) {
   .top-bar {
     gap: 5px;
   }
 
   .resource {
-    padding: 5px 6px 7px;
+    padding: 6px 7px 8px;
     border-radius: 10px;
   }
 
@@ -114,11 +104,8 @@ body {
     font-size: 0.54rem;
   }
 
-  .resource .value {
-    font-size: 0.72rem;
-  }
-
   .resource .bar {
+    width: 72%;
     height: 2.5px;
   }
 }
@@ -134,6 +121,17 @@ body {
   perspective: 1200px;
 }
 
+.card-stack {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.card-stack .card {
+  position: absolute;
+  inset: 0;
+}
+
 .card {
   position: relative;
   width: 100%;
@@ -145,9 +143,6 @@ body {
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(6px);
   touch-action: pan-y;
-  animation-duration: 0.5s;
-  animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
-  animation-fill-mode: both;
   will-change: transform, opacity;
   cursor: grab;
   flex: 1;
@@ -156,8 +151,21 @@ body {
   backface-visibility: hidden;
 }
 
-.card--enter {
-  animation-name: cardEnter;
+.card--current {
+  z-index: 2;
+}
+
+.card--preview {
+  z-index: 1;
+  pointer-events: none;
+  transform: translateY(18px);
+  opacity: 0;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.card--preview.card--visible {
+  opacity: 0.86;
+  transform: translateY(14px);
 }
 
 .card--locked {
@@ -194,90 +202,96 @@ body {
   padding: 32px 24px 30px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   background: none;
-  color: #f1f3ff;
-  text-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
+  color: #10131a;
+  text-shadow: none;
   z-index: 1;
+  align-items: center;
+  text-align: center;
 }
 
 .card-body h1 {
   margin: 0;
   font-size: 1.45rem;
+  color: #05070c;
 }
 
 .card-body p {
   margin: 0;
   line-height: 1.45;
-  color: rgba(248, 249, 255, 0.88);
-  font-size: 0.98rem;
+  color: #1a1c24;
+  font-size: 1.02rem;
 }
 
-.gesture-hints {
-  width: 100%;
+.swipe-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
   display: flex;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.hint {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 1rem;
-  letter-spacing: 0.02em;
-  color: rgba(248, 249, 255, 0.7);
-  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
   flex-direction: column;
-}
-
-.hint--disabled {
-  opacity: 0.45;
-}
-
-.hint::before {
-  font-weight: 700;
-  font-size: 1.4rem;
-}
-
-.hint-left::before {
-  content: '\2190';
-}
-
-.hint-right::before {
-  content: '\2192';
-}
-
-.hint::after {
-  content: attr(data-label);
-  font-size: 0.68rem;
-  text-transform: none;
-  letter-spacing: normal;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   color: rgba(248, 249, 255, 0.72);
-  line-height: 1.2;
+  font-size: 0.95rem;
+  text-align: center;
+  max-width: 160px;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0.85;
+  transition: color 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  padding: 0 4px;
+  transform: scale(1);
+  transform-origin: center;
 }
 
-.hint[data-label='']::after,
-.hint:not([data-label])::after {
-  content: '';
+.swipe-indicator--left {
+  left: 4px;
 }
 
-.hint--active {
-  transform: translateY(-2px);
-  color: #f8f9ff;
+.swipe-indicator--right {
+  right: 4px;
 }
 
-.hint-left.hint--active {
-  background: rgba(255, 107, 107, 0.35);
+.swipe-indicator__arrow {
+  font-size: 2.4rem;
+  line-height: 1;
+  align-self: center;
 }
 
-.hint-right.hint--active {
-  background: rgba(72, 202, 228, 0.35);
+.swipe-indicator__label {
+  font-size: 1rem;
+  color: inherit;
+  opacity: 0.82;
+  margin: 0;
+}
+
+.swipe-indicator__label:empty {
+  display: none;
+}
+
+.swipe-indicator--active {
+  transform: scale(1.04);
+  opacity: 1;
+}
+
+.swipe-indicator--active .swipe-indicator__label {
+  opacity: 1;
+  font-weight: 600;
+}
+
+.swipe-indicator--left.swipe-indicator--active {
+  color: #ff7b7b;
+}
+
+.swipe-indicator--right.swipe-indicator--active {
+  color: #5ad1f0;
+}
+
+.swipe-indicator--disabled {
+  opacity: 0.35;
 }
 
 .card-image--placeholder {
@@ -306,23 +320,14 @@ body {
   min-height: 1.4em;
   font-size: 0.95rem;
   color: rgba(248, 249, 255, 0.9);
+  text-align: center;
+  align-self: center;
+  padding: 0 8px;
 }
 
 @media (min-width: 600px) {
   body {
     background: radial-gradient(circle at top, #2c3455, #141722 60%);
-  }
-}
-
-@keyframes cardEnter {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 24px, 0) rotateY(-12deg) scale(0.94);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) rotateY(0) scale(1);
   }
 }
 

@@ -11,6 +11,9 @@ let loading = true;
 let isAnimating = false;
 const SWIPE_TRIGGER_DISTANCE = 70;
 const MAX_DRAG_DISTANCE = 180;
+let nextCardId = null;
+const HINT_ACTIVE_CLASS = 'swipe-indicator--active';
+const HINT_DISABLED_CLASS = 'swipe-indicator--disabled';
 
 const gestureState = {
   active: false,
@@ -23,13 +26,39 @@ const elements = {
   title: document.getElementById('card-title'),
   text: document.getElementById('card-text'),
   image: document.getElementById('card-image'),
-  cardImageContainer: document.querySelector('.card-image'),
+  cardImageContainer: document.querySelector('#card .card-image'),
   card: document.getElementById('card'),
+  previewCard: document.getElementById('card-preview'),
+  previewTitle: document.getElementById('card-preview-title'),
+  previewText: document.getElementById('card-preview-text'),
+  previewImage: document.getElementById('card-preview-image'),
+  previewImageContainer: document.querySelector('#card-preview .card-image'),
+  cardStack: document.querySelector('.card-stack'),
   hintLeft: document.getElementById('hint-left'),
   hintRight: document.getElementById('hint-right'),
   status: document.getElementById('status-message'),
   reset: document.getElementById('reset-button'),
   resourceBars: Array.from(document.querySelectorAll('.resource')),
+};
+
+elements.hintLeftLabel = elements.hintLeft?.querySelector('.swipe-indicator__label');
+elements.hintRightLabel = elements.hintRight?.querySelector('.swipe-indicator__label');
+
+const cardViews = {
+  current: {
+    card: elements.card,
+    title: elements.title,
+    text: elements.text,
+    image: elements.image,
+    imageContainer: elements.cardImageContainer,
+  },
+  preview: {
+    card: elements.previewCard,
+    title: elements.previewTitle,
+    text: elements.previewText,
+    image: elements.previewImage,
+    imageContainer: elements.previewImageContainer,
+  },
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -137,33 +166,57 @@ function resetCardPosition() {
 }
 
 function clearHintActive() {
-  elements.hintLeft.classList.remove('hint--active');
-  elements.hintRight.classList.remove('hint--active');
+  if (elements.hintLeft) {
+    elements.hintLeft.classList.remove(HINT_ACTIVE_CLASS);
+  }
+  if (elements.hintRight) {
+    elements.hintRight.classList.remove(HINT_ACTIVE_CLASS);
+  }
 }
 
-function setHintContent(element, directionLabel, actionLabel = '') {
+function setHintContent(element, directionLabel, actionLabel = '', options = {}) {
+  if (!element) return;
+  const { ariaDirection = directionLabel } = options;
+  const labelSpan =
+    element === elements.hintLeft
+      ? elements.hintLeftLabel
+      : element === elements.hintRight
+      ? elements.hintRightLabel
+      : element.querySelector('.swipe-indicator__label');
+
   const trimmedAction = actionLabel?.trim?.() ?? '';
-  const labelText = trimmedAction ? `${directionLabel}: ${trimmedAction}` : directionLabel;
-  if (trimmedAction) {
-    element.dataset.label = trimmedAction;
-  } else {
-    delete element.dataset.label;
+  if (labelSpan) {
+    labelSpan.textContent = trimmedAction;
   }
-  element.setAttribute('aria-label', labelText);
+
+  const parts = [];
+  if (ariaDirection) {
+    parts.push(ariaDirection);
+  }
   if (trimmedAction) {
+    parts.push(trimmedAction);
+  }
+  const labelText = parts.join(': ');
+  if (labelText) {
+    element.setAttribute('aria-label', labelText);
     element.title = labelText;
+  } else if (ariaDirection) {
+    element.setAttribute('aria-label', ariaDirection);
+    element.removeAttribute('title');
   } else {
+    element.removeAttribute('aria-label');
     element.removeAttribute('title');
   }
 }
 
 function updateHintActivity(progress) {
+  if (!elements.hintLeft || !elements.hintRight) return;
   if (progress <= -0.2) {
-    elements.hintLeft.classList.add('hint--active');
-    elements.hintRight.classList.remove('hint--active');
+    elements.hintLeft.classList.add(HINT_ACTIVE_CLASS);
+    elements.hintRight.classList.remove(HINT_ACTIVE_CLASS);
   } else if (progress >= 0.2) {
-    elements.hintRight.classList.add('hint--active');
-    elements.hintLeft.classList.remove('hint--active');
+    elements.hintRight.classList.add(HINT_ACTIVE_CLASS);
+    elements.hintLeft.classList.remove(HINT_ACTIVE_CLASS);
   } else {
     clearHintActive();
   }
@@ -179,8 +232,70 @@ function updateHintLabels(card) {
   const leftLabel = card.choices?.left?.label ?? '';
   const rightLabel = card.choices?.right?.label ?? '';
 
-  setHintContent(elements.hintLeft, 'Влево', leftLabel);
-  setHintContent(elements.hintRight, 'Вправо', rightLabel);
+  setHintContent(elements.hintLeft, 'Свайп влево', leftLabel, {
+    ariaDirection: 'Свайп влево',
+  });
+  setHintContent(elements.hintRight, 'Свайп вправо', rightLabel, {
+    ariaDirection: 'Свайп вправо',
+  });
+}
+
+function clearCardView(view) {
+  if (!view) return;
+  if (view.title) view.title.textContent = '';
+  if (view.text) view.text.textContent = '';
+  if (view.image) {
+    view.image.hidden = true;
+    view.image.removeAttribute('src');
+    view.image.alt = '';
+  }
+  if (view.imageContainer) {
+    view.imageContainer.style.display = 'none';
+    view.imageContainer.classList.remove('card-image--placeholder');
+  }
+}
+
+function setCardContent(view, card) {
+  if (!view) return;
+  if (!card) {
+    clearCardView(view);
+    return;
+  }
+
+  if (view.title) view.title.textContent = card.title ?? '';
+  if (view.text) view.text.textContent = card.text ?? '';
+
+  const hasImage = Boolean(card.image);
+  if (view.imageContainer) {
+    view.imageContainer.style.display = '';
+    view.imageContainer.classList.toggle('card-image--placeholder', !hasImage);
+  }
+  if (view.image) {
+    if (hasImage) {
+      view.image.hidden = false;
+      view.image.src = card.image;
+      view.image.alt = card.title ?? '';
+    } else {
+      view.image.hidden = true;
+      view.image.removeAttribute('src');
+      view.image.alt = '';
+    }
+  }
+}
+
+function updatePreviewCardView(card) {
+  if (!card) {
+    clearCardView(cardViews.preview);
+    if (cardViews.preview.card) {
+      cardViews.preview.card.classList.remove('card--visible');
+    }
+    return;
+  }
+
+  setCardContent(cardViews.preview, card);
+  if (cardViews.preview.card) {
+    cardViews.preview.card.classList.add('card--visible');
+  }
 }
 
 async function init() {
@@ -244,7 +359,6 @@ function updateResources() {
     const value = state.resources[key];
     const percent = Math.max(RESOURCE_MIN, Math.min(value, RESOURCE_MAX)) / RESOURCE_MAX * 100;
     resourceElement.querySelector('.fill').style.width = `${percent}%`;
-    resourceElement.querySelector('.value').textContent = value;
   });
 }
 
@@ -270,82 +384,121 @@ function meetsConditions(card) {
   return true;
 }
 
-function drawNextCard() {
-  if (!state.deck || state.deck.length === 0) {
-    // Replenish with all cards that might still be relevant
+function ensureDeckHasCards() {
+  if (!Array.isArray(state.deck)) {
+    state.deck = [];
+  }
+  if (state.deck.length === 0) {
     state.deck = shuffle(cardList.map((card) => card.id));
   }
+}
 
+function pullNextCardId() {
+  ensureDeckHasCards();
   let attempts = state.deck.length;
   while (attempts > 0 && state.deck.length > 0) {
     const nextId = state.deck.shift();
     const card = cardMap.get(nextId);
     if (!card) {
-      attempts--;
+      attempts -= 1;
       continue;
     }
     if (meetsConditions(card)) {
-      state.currentCardId = nextId;
-      saveState();
-      renderCard();
-      return;
+      return nextId;
     }
     state.deck.push(nextId);
-    attempts--;
+    attempts -= 1;
   }
+  return null;
+}
 
+function peekNextCardId() {
+  ensureDeckHasCards();
+  const deckCopy = [...state.deck];
+  let attempts = deckCopy.length;
+  while (attempts > 0 && deckCopy.length > 0) {
+    const nextId = deckCopy.shift();
+    const card = cardMap.get(nextId);
+    if (!card) {
+      attempts -= 1;
+      continue;
+    }
+    if (meetsConditions(card)) {
+      return nextId;
+    }
+    deckCopy.push(nextId);
+    attempts -= 1;
+  }
+  return null;
+}
+
+function showNoCardsState({ skipAnimation = false } = {}) {
   state.currentCardId = null;
-  elements.title.textContent = 'Новая неделя';
-  elements.text.textContent = 'Все спокойно. Наслаждайтесь паузой или начните новую смену!';
-  elements.cardImageContainer.style.display = 'none';
-  elements.cardImageContainer.classList.remove('card-image--placeholder');
-  elements.image.hidden = true;
-  elements.image.removeAttribute('src');
-  elements.image.alt = '';
+  clearCardView(cardViews.current);
+  if (cardViews.current.title) {
+    cardViews.current.title.textContent = 'Новая неделя';
+  }
+  if (cardViews.current.text) {
+    cardViews.current.text.textContent = 'Все спокойно. Наслаждайтесь паузой или начните новую смену!';
+  }
+  updatePreviewCardView(null);
+  nextCardId = null;
   setHintContent(elements.hintLeft, 'Свайп влево', 'Пауза');
   setHintContent(elements.hintRight, 'Свайп вправо', 'Новая смена');
   elements.status.textContent = 'Подходящих карточек нет — обновите смену.';
   disableChoices(true);
   saveState();
-  playCardEnterAnimation();
+  if (!skipAnimation) {
+    playCardEnterAnimation();
+  }
 }
 
-function renderCard() {
-  if (!state.currentCardId) {
-    drawNextCard();
-    return;
+function renderCard(options = {}) {
+  const { skipAnimation = false } = options;
+
+  if (!state.currentCardId && !state.gameOver) {
+    state.currentCardId = pullNextCardId();
   }
-  const card = cardMap.get(state.currentCardId);
+
+  const card = state.currentCardId ? cardMap.get(state.currentCardId) : null;
   if (!card) {
-    drawNextCard();
+    showNoCardsState({ skipAnimation });
     return;
   }
-  disableChoices(state.gameOver);
-  elements.title.textContent = card.title;
-  elements.text.textContent = card.text;
-  const hasImage = Boolean(card.image);
-  elements.cardImageContainer.style.display = '';
-  elements.cardImageContainer.classList.toggle('card-image--placeholder', !hasImage);
-  if (hasImage) {
-    elements.image.hidden = false;
-    elements.image.src = card.image;
-    elements.image.alt = card.title;
-  } else {
-    elements.image.hidden = true;
-    elements.image.removeAttribute('src');
-    elements.image.alt = '';
-  }
+
+  setCardContent(cardViews.current, card);
   updateHintLabels(card);
-  elements.status.textContent = `День ${state.day}`;
+
+  if (state.gameOver) {
+    disableChoices(true);
+  } else {
+    disableChoices(false);
+    elements.status.textContent = `День ${state.day}`;
+  }
+
   updateResources();
+
+  if (state.gameOver) {
+    nextCardId = null;
+    updatePreviewCardView(null);
+  } else {
+    nextCardId = peekNextCardId();
+    const previewCard = nextCardId ? cardMap.get(nextCardId) : null;
+    updatePreviewCardView(previewCard);
+  }
+
   saveState();
-  playCardEnterAnimation();
+
+  if (!skipAnimation) {
+    playCardEnterAnimation();
+  }
 }
 
 function disableChoices(disabled) {
   elements.card.classList.toggle('card--locked', disabled);
   [elements.hintLeft, elements.hintRight].forEach((hint) => {
-    hint.classList.toggle('hint--disabled', disabled);
+    if (!hint) return;
+    hint.classList.toggle(HINT_DISABLED_CLASS, disabled);
   });
   if (disabled) {
     clearHintActive();
@@ -356,36 +509,100 @@ async function handleChoice(side) {
   if (loading || state.gameOver || isAnimating) return;
   const card = cardMap.get(state.currentCardId);
   if (!card) return;
-  const choice = card.choices[side];
+  const choice = card.choices?.[side];
   if (!choice) return;
 
   isAnimating = true;
   disableChoices(true);
 
+  const cardElement = elements.card;
+  cardElement.style.transition = '';
+  cardElement.style.transform = '';
+  cardElement.style.opacity = '';
+
+  let incomingCard = null;
+  let upcomingPreviewCard = null;
+  let postAnimationAction = null;
+
+  applyEffects(choice.effects);
+  applyFlags(choice.flags_set);
+  applyDeckChanges(choice.adds, choice.removes);
+
+  state.day += 1;
+  updateResources();
+
+  const defeated = checkDefeat();
+
+  if (defeated || state.gameOver) {
+    nextCardId = null;
+    updatePreviewCardView(null);
+    postAnimationAction = () => {
+      cardElement.style.visibility = '';
+      renderCard({ skipAnimation: true });
+    };
+  } else {
+    const nextCurrentId = pullNextCardId();
+    const previewId = peekNextCardId();
+    nextCardId = previewId;
+    incomingCard = nextCurrentId ? cardMap.get(nextCurrentId) : null;
+    upcomingPreviewCard = previewId ? cardMap.get(previewId) : null;
+
+    if (incomingCard) {
+      state.currentCardId = nextCurrentId;
+      updatePreviewCardView(incomingCard);
+      postAnimationAction = () => {
+        cardElement.style.visibility = '';
+        setCardContent(cardViews.current, incomingCard);
+        updateHintLabels(incomingCard);
+        elements.status.textContent = `День ${state.day}`;
+        disableChoices(false);
+        saveState();
+
+        const enterAnimation = playCardEnterAnimation();
+        let previewUpdated = false;
+        let fallbackTimeout = null;
+        const applyUpcomingPreview = () => {
+          if (previewUpdated) return;
+          previewUpdated = true;
+          if (fallbackTimeout !== null) {
+            clearTimeout(fallbackTimeout);
+          }
+          updatePreviewCardView(upcomingPreviewCard);
+        };
+
+        if (enterAnimation && typeof enterAnimation.then === 'function') {
+          enterAnimation.then(applyUpcomingPreview, applyUpcomingPreview);
+        }
+
+        if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
+          fallbackTimeout = window.setTimeout(() => {
+            applyUpcomingPreview();
+          }, 720);
+        } else {
+          applyUpcomingPreview();
+        }
+      };
+    } else {
+      updatePreviewCardView(null);
+      postAnimationAction = () => {
+        cardElement.style.visibility = '';
+        showNoCardsState({ skipAnimation: true });
+      };
+    }
+  }
+
   try {
-    try {
-      await playSwipeAnimation(side);
-    } catch (error) {
-      console.warn('Swipe animation did not finish as expected', error);
-    }
+    await playSwipeAnimation(cardElement, side);
+  } catch (error) {
+    console.warn('Swipe animation did not finish as expected', error);
+  }
 
-    applyEffects(choice.effects);
-    applyFlags(choice.flags_set);
-    applyDeckChanges(choice.adds, choice.removes);
-
-    state.day += 1;
-    updateResources();
-    saveState();
-
-    if (checkDefeat()) {
-      renderCard();
-      return;
-    }
-
-    state.currentCardId = null;
-    saveState();
-    drawNextCard();
+  try {
+    postAnimationAction?.();
   } finally {
+    if (cardElement) {
+      cardElement.style.visibility = '';
+    }
     isAnimating = false;
   }
 }
@@ -442,42 +659,50 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-function playSwipeAnimation(direction) {
+function playSwipeAnimation(cardElement, direction) {
   return new Promise((resolve) => {
-    const cardElement = elements.card;
-    const computedStyle = window.getComputedStyle(cardElement);
-    const startTransform = cardElement.style.transform || computedStyle.transform || 'none';
-    const startOpacity = parseFloat(cardElement.style.opacity || computedStyle.opacity || '1');
-    const width = window.innerWidth || cardElement.offsetWidth || 1;
+    const target = cardElement || elements.card;
+    if (!target) {
+      resolve();
+      return;
+    }
+
+    const computedStyle = window.getComputedStyle(target);
+    const startTransform = target.style.transform || computedStyle.transform || 'none';
+    const startOpacity = parseFloat(target.style.opacity || computedStyle.opacity || '1');
+    const width = window.innerWidth || target.offsetWidth || 1;
     const travelX = width * 1.35;
     const offsetX = direction === 'left' ? -travelX : travelX;
     const tiltY = direction === 'left' ? -42 : 42;
     const tiltZ = direction === 'left' ? -36 : 36;
     const tiltX = direction === 'left' ? 18 : -18;
-    const previousOrigin = cardElement.style.transformOrigin;
+    const previousOrigin = target.style.transformOrigin;
 
-    if (typeof cardElement.animate !== 'function') {
+    const finalize = () => {
+      target.style.visibility = 'hidden';
+      target.style.transition = '';
+      target.style.transform = '';
+      target.style.opacity = '';
+      target.style.transformOrigin = previousOrigin;
+      resolve();
+    };
+
+    if (typeof target.animate !== 'function') {
       const rotateZ = direction === 'left' ? -36 : 36;
       const offsetY = -110;
       const offsetZ = -180;
-      cardElement.style.transition = 'transform 0.55s cubic-bezier(0.22, 0.71, 0.35, 1), opacity 0.5s ease';
-      cardElement.style.transformOrigin = '50% 60%';
-      cardElement.style.transform = `translate3d(${offsetX}px, ${offsetY}px, ${offsetZ}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotate(${rotateZ}deg) scale(0.78)`;
-      cardElement.style.opacity = '0';
-      setTimeout(() => {
-        cardElement.style.transition = '';
-        cardElement.style.transform = '';
-        cardElement.style.opacity = '';
-        cardElement.style.transformOrigin = previousOrigin;
-        resolve();
-      }, 580);
+      target.style.transition = 'transform 0.55s cubic-bezier(0.22, 0.71, 0.35, 1), opacity 0.5s ease';
+      target.style.transformOrigin = '50% 60%';
+      target.style.transform = `translate3d(${offsetX}px, ${offsetY}px, ${offsetZ}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotate(${rotateZ}deg) scale(0.78)`;
+      target.style.opacity = '0';
+      window.setTimeout(finalize, 580);
       return;
     }
 
-    cardElement.style.transition = 'none';
-    cardElement.style.transformOrigin = '50% 60%';
+    target.style.transition = 'none';
+    target.style.transformOrigin = '50% 60%';
 
-    const animation = cardElement.animate(
+    const animation = target.animate(
       [
         {
           transform: startTransform === 'none' ? 'translate3d(0, 0, 0)' : startTransform,
@@ -511,36 +736,41 @@ function playSwipeAnimation(direction) {
       }
       try {
         animation.cancel();
-      } catch (error) {
-        // Some browsers may throw if the animation is already finished.
+      } catch (cancelError) {
+        // Ignore cancellation errors – animation may already be finished.
       }
-      cardElement.style.transition = '';
-      cardElement.style.transform = '';
-      cardElement.style.opacity = '';
-      cardElement.style.transformOrigin = previousOrigin;
-      resolve();
+      finalize();
     };
 
-    failSafeTimeout = window.setTimeout(() => cleanup(), 800);
+    failSafeTimeout = window.setTimeout(cleanup, 820);
 
     animation.addEventListener('finish', cleanup, { once: true });
     animation.addEventListener('cancel', cleanup, { once: true });
     if (typeof animation.finished?.then === 'function') {
-      animation.finished.then(() => cleanup(), () => cleanup());
+      animation.finished.then(cleanup, cleanup);
     }
   });
 }
 
 function playCardEnterAnimation() {
   const cardElement = elements.card;
+  if (!cardElement) {
+    return Promise.resolve();
+  }
+
   cardElement.style.transition = '';
   cardElement.style.transform = '';
   cardElement.style.opacity = '';
   cardElement.classList.remove('card--dragging');
   clearHintActive();
-  cardElement.classList.remove('card--enter');
-  void cardElement.offsetWidth;
-  cardElement.classList.add('card--enter');
+
+  if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+    return new Promise((resolve) => {
+      window.requestAnimationFrame(() => resolve());
+    });
+  }
+
+  return Promise.resolve();
 }
 
 function resetGame() {
@@ -548,7 +778,8 @@ function resetGame() {
   elements.status.textContent = 'Смена сброшена. Удачи!';
   disableChoices(false);
   updateResources();
-  drawNextCard();
+  nextCardId = null;
+  renderCard();
 }
 
 function shuffle(array) {
