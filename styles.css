@@ -159,14 +159,14 @@ body {
 .card--preview {
   z-index: 1;
   pointer-events: none;
-  transform: translateY(18px);
+  transform: translateY(0);
   opacity: 0;
   transition: opacity 0.28s ease, transform 0.28s ease;
 }
 
 .card--preview.card--visible {
   opacity: 0.86;
-  transform: translateY(14px);
+  transform: scale(0.97);
 }
 
 .card--locked {
@@ -223,6 +223,25 @@ body {
   line-height: 1.45;
   color: #1a1c24;
   font-size: 1.02rem;
+}
+
+.card--defeat .card-body {
+  align-self: center;
+  justify-content: center;
+  padding: 38px 26px;
+  gap: 18px;
+  min-height: 100%;
+}
+
+.card--defeat .card-body h1 {
+  font-size: 1.58rem;
+  color: #04060d;
+}
+
+.card--defeat .card-body p {
+  font-size: 1.08rem;
+  color: rgba(10, 13, 22, 0.95);
+  max-width: 360px;
 }
 
 .swipe-indicator {
