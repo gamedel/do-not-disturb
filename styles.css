@@ -119,6 +119,7 @@ body {
   gap: 16px;
   min-height: 0;
   perspective: 1200px;
+  overflow: hidden;
 }
 
 .card-stack {
@@ -179,7 +180,7 @@ body {
 
 .card-image {
   position: relative;
-  min-height: clamp(340px, 60vh, 420px);
+  min-height: clamp(300px, 55vh, 380px);
   background: rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
@@ -199,7 +200,7 @@ body {
   position: relative;
   grid-area: 1 / 1;
   align-self: end;
-  padding: 32px 24px 30px;
+  padding: 26px 22px 26px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -249,16 +250,29 @@ body {
 
 .swipe-indicator--left {
   left: 4px;
+  align-items: flex-start;
+  text-align: left;
+  padding-left: 12px;
 }
 
 .swipe-indicator--right {
   right: 4px;
+  align-items: flex-end;
+  text-align: right;
+  padding-right: 12px;
 }
 
 .swipe-indicator__arrow {
   font-size: 2.4rem;
   line-height: 1;
-  align-self: center;
+}
+
+.swipe-indicator--left .swipe-indicator__arrow {
+  align-self: flex-start;
+}
+
+.swipe-indicator--right .swipe-indicator__arrow {
+  align-self: flex-end;
 }
 
 .swipe-indicator__label {
