@@ -15,6 +15,39 @@ let nextCardId = null;
 const HINT_ACTIVE_CLASS = 'swipe-indicator--active';
 const HINT_DISABLED_CLASS = 'swipe-indicator--disabled';
 
+const DEFEAT_SCENARIOS = {
+  service: {
+    title: 'Гости ушли, хлопнув дверями',
+    text: 'Сервис обнулился: даже табличку «Do Not Disturb» увезли на память. Перекройте смену и возвращайтесь с новыми силами.',
+    statusMessage: 'Гости недовольны — сервис исчерпан. Нажмите «Новая смена», чтобы попробовать снова.',
+    hint: 'Нажмите «Новая смена»',
+  },
+  revenue: {
+    title: 'Касса поёт романсы',
+    text: 'Доходы испарились, а бухгалтер уже гуглит слово «распродать». Перезапустите смену и верните прибыль.',
+    statusMessage: 'Касса пуста — доход исчерпан. Запустите новую смену.',
+    hint: 'Запустите новую смену',
+  },
+  order: {
+    title: 'Хаос в лобби',
+    text: 'Чемоданы, свадьбы и конференции смешались в очереди на ресепшен. Возьмите паузу и наведите порядок с новой сменой.',
+    statusMessage: 'Порядок исчерпан. Запустите новую смену.',
+    hint: 'Запустите новую смену',
+  },
+  burnout: {
+    title: 'Вы перегорели',
+    text: 'Команда синхронно выключила телефоны, а кофемашина просит отпуск. Дайте всем отдых и начните смену заново.',
+    statusMessage: 'Выгорание достигло предела. Запустите новую смену.',
+    hint: 'Запустите новую смену',
+  },
+  default: {
+    title: 'Смена окончена',
+    text: 'Ресурсы исчерпаны. Нажмите «Новая смена», чтобы попробовать снова.',
+    statusMessage: 'Ресурсы закончились. Запустите новую смену.',
+    hint: 'Нажмите «Новая смена»',
+  },
+};
+
 const gestureState = {
   active: false,
   pointerId: null,
@@ -60,6 +93,10 @@ const cardViews = {
     imageContainer: elements.previewImageContainer,
   },
 };
+
+function getDefeatScenario(reasonKey) {
+  return DEFEAT_SCENARIOS[reasonKey] || DEFEAT_SCENARIOS.default;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   init();
@@ -331,6 +368,7 @@ function createInitialState() {
     flags: {},
     currentCardId: null,
     gameOver: false,
+    defeatReason: null,
   };
 }
 
@@ -338,7 +376,16 @@ function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object') {
+      if (!('defeatReason' in parsed)) {
+        parsed.defeatReason = null;
+      }
+      if (!parsed.gameOver) {
+        parsed.defeatReason = null;
+      }
+    }
+    return parsed;
   } catch (error) {
     console.warn('Не удалось считать состояние', error);
     return null;
@@ -456,6 +503,17 @@ function showNoCardsState({ skipAnimation = false } = {}) {
 function renderCard(options = {}) {
   const { skipAnimation = false } = options;
 
+  if (state.gameOver) {
+    nextCardId = null;
+    updatePreviewCardView(null);
+    showDefeatCard(state.defeatReason);
+    saveState();
+    if (!skipAnimation) {
+      playCardEnterAnimation();
+    }
+    return;
+  }
+
   if (!state.currentCardId && !state.gameOver) {
     state.currentCardId = pullNextCardId();
   }
@@ -464,6 +522,10 @@ function renderCard(options = {}) {
   if (!card) {
     showNoCardsState({ skipAnimation });
     return;
+  }
+
+  if (cardViews.current.card) {
+    cardViews.current.card.classList.remove('card--defeat');
   }
 
   setCardContent(cardViews.current, card);
@@ -628,12 +690,43 @@ function applyDeckChanges(adds = [], removes = []) {
   }
 }
 
+function showDefeatCard(reasonKey) {
+  const scenario = getDefeatScenario(reasonKey);
+  disableChoices(true);
+
+  const defeatCard = {
+    title: scenario.title,
+    text: scenario.text,
+    image: scenario.image ?? '',
+  };
+
+  if (cardViews.current.card) {
+    cardViews.current.card.classList.add('card--defeat');
+  }
+
+  setCardContent(cardViews.current, defeatCard);
+
+  if (elements.status && scenario.statusMessage) {
+    elements.status.textContent = scenario.statusMessage;
+  }
+
+  setHintContent(elements.hintLeft, 'Смена завершена', scenario.hint);
+  setHintContent(elements.hintRight, 'Смена завершена', scenario.hint);
+}
+
 function checkDefeat() {
   const depleted = RESOURCE_KEYS.find((key) => state.resources[key] <= RESOURCE_MIN);
   if (depleted) {
     state.gameOver = true;
+    state.defeatReason = depleted;
+    state.currentCardId = null;
+    const scenario = getDefeatScenario(depleted);
+    if (elements.status && scenario.statusMessage) {
+      elements.status.textContent = scenario.statusMessage;
+    } else if (elements.status) {
+      elements.status.textContent = `Ресурс «${translateResource(depleted)}» исчерпан. Смена окончена.`;
+    }
     disableChoices(true);
-    elements.status.textContent = `Ресурс «${translateResource(depleted)}» исчерпан. Смена окончена.`;
     saveState();
     return true;
   }
