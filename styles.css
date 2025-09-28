@@ -158,14 +158,14 @@ body {
 .card--preview {
   z-index: 1;
   pointer-events: none;
-  transform: translateY(18px) scale(0.94);
+  transform: translateY(18px);
   opacity: 0;
   transition: opacity 0.28s ease, transform 0.28s ease;
 }
 
 .card--preview.card--visible {
   opacity: 0.86;
-  transform: translateY(14px) scale(0.96);
+  transform: translateY(14px);
 }
 
 .card--locked {
