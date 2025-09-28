@@ -560,9 +560,13 @@ async function handleChoice(side) {
 
         const enterAnimation = playCardEnterAnimation();
         let previewUpdated = false;
+        let fallbackTimeout = null;
         const applyUpcomingPreview = () => {
           if (previewUpdated) return;
           previewUpdated = true;
+          if (fallbackTimeout !== null) {
+            clearTimeout(fallbackTimeout);
+          }
           updatePreviewCardView(upcomingPreviewCard);
         };
 
@@ -570,12 +574,10 @@ async function handleChoice(side) {
           enterAnimation.then(applyUpcomingPreview, applyUpcomingPreview);
         }
 
-        if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
-          window.requestAnimationFrame(() => {
-            window.requestAnimationFrame(() => {
-              applyUpcomingPreview();
-            });
-          });
+        if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
+          fallbackTimeout = window.setTimeout(() => {
+            applyUpcomingPreview();
+          }, 720);
         } else {
           applyUpcomingPreview();
         }
