@@ -180,7 +180,7 @@ body {
 
 .card-image {
   position: relative;
-  min-height: clamp(300px, 55vh, 380px);
+  min-height: clamp(295px, calc(55vh - 5px), 375px);
   background: rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
@@ -213,7 +213,7 @@ body {
 }
 
 .card-body h1 {
-  margin: 0;
+  margin: 5px 0 0;
   font-size: 1.45rem;
   color: #05070c;
 }
