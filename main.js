@@ -182,16 +182,14 @@ function applyDrag(deltaX) {
   const translateZ = Math.abs(progress) * -46;
   const scale = 1 - Math.min(Math.abs(progress) * 0.05, 0.08);
   card.style.transform = `translate3d(${clamped}px, ${translateY}px, ${translateZ}px) rotateX(${rotationX}deg) rotateY(${rotationY}deg) rotate(${rotationZ}deg) scale(${scale})`;
-  card.style.opacity = `${1 - Math.min(Math.abs(progress) * 0.32, 0.32)}`;
 
   updateHintActivity(progress);
 }
 
 function resetCardPosition() {
   const card = elements.card;
-  card.style.transition = 'transform 0.28s ease, opacity 0.28s ease';
+  card.style.transition = 'transform 0.28s ease';
   card.style.transform = '';
-  card.style.opacity = '';
   clearHintActive();
 
   const handleTransitionEnd = (event) => {
@@ -773,7 +771,6 @@ function playSwipeAnimation(cardElement, direction) {
 
     const computedStyle = window.getComputedStyle(target);
     const startTransform = target.style.transform || computedStyle.transform || 'none';
-    const startOpacity = parseFloat(target.style.opacity || computedStyle.opacity || '1');
     const width = window.innerWidth || target.offsetWidth || 1;
     const travelX = width * 1.35;
     const offsetX = direction === 'left' ? -travelX : travelX;
@@ -795,10 +792,9 @@ function playSwipeAnimation(cardElement, direction) {
       const rotateZ = direction === 'left' ? -36 : 36;
       const offsetY = -110;
       const offsetZ = -180;
-      target.style.transition = 'transform 0.55s cubic-bezier(0.22, 0.71, 0.35, 1), opacity 0.5s ease';
+      target.style.transition = 'transform 0.55s cubic-bezier(0.22, 0.71, 0.35, 1)';
       target.style.transformOrigin = '50% 60%';
       target.style.transform = `translate3d(${offsetX}px, ${offsetY}px, ${offsetZ}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotate(${rotateZ}deg) scale(0.78)`;
-      target.style.opacity = '0';
       window.setTimeout(finalize, 580);
       return;
     }
@@ -810,16 +806,13 @@ function playSwipeAnimation(cardElement, direction) {
       [
         {
           transform: startTransform === 'none' ? 'translate3d(0, 0, 0)' : startTransform,
-          opacity: startOpacity,
         },
         {
           transform: `translate3d(${offsetX * 0.35}px, -40px, -90px) rotateX(${tiltX * 0.6}deg) rotateY(${tiltY * 0.7}deg) rotate(${tiltZ * 0.8}deg) scale(0.92)`,
-          opacity: Math.max(startOpacity - 0.2, 0.7),
           offset: 0.45,
         },
         {
           transform: `translate3d(${offsetX}px, -150px, -210px) rotateX(${tiltX}deg) rotateY(${tiltY * 1.25}deg) rotate(${tiltZ * 1.4}deg) scale(0.72)`,
-          opacity: 0,
         },
       ],
       {

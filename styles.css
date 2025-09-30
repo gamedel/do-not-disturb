@@ -206,7 +206,7 @@ body {
   position: relative;
   grid-area: 1 / 1;
   align-self: end;
-  padding: 31px 22px 26px;
+  padding: 36px 22px 26px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -219,8 +219,8 @@ body {
 }
 
 .card-body h1 {
-  margin: 20px 0 0;
-  font-size: 1.28rem;
+  margin: 0;
+  font-size: 1.24rem;
   color: #05070c;
 }
 
