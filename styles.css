@@ -195,9 +195,9 @@ body {
 
 .card-image img {
   position: absolute;
-  inset: -2px;
-  width: calc(100% + 4px);
-  height: calc(100% + 4px);
+  inset: -3px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
   object-fit: cover;
   display: block;
 }
@@ -219,8 +219,8 @@ body {
 }
 
 .card-body h1 {
-  margin: 10px 0 0;
-  font-size: 1.35rem;
+  margin: 20px 0 0;
+  font-size: 1.28rem;
   color: #05070c;
 }
 
