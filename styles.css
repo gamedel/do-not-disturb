@@ -32,10 +32,11 @@ body {
 }
 
 #app {
+  --app-width: min(480px, 100vw);
   display: flex;
   flex-direction: column;
   flex: 1;
-  width: min(480px, 100vw);
+  width: var(--app-width);
   min-height: 100vh;
   padding: calc(env(safe-area-inset-top, 0) + 12px) 14px calc(env(safe-area-inset-bottom, 0) + 14px);
   gap: 12px;
@@ -120,7 +121,6 @@ body {
   min-height: 0;
   perspective: 1200px;
   overflow: hidden;
-  container-type: inline-size;
 }
 
 .card-stack {
@@ -128,7 +128,11 @@ body {
   flex: 0 0 auto;
   min-height: 0;
   width: 100%;
-  height: calc((100cqw * 700 / 485) - 5px);
+  height: clamp(
+    295px,
+    min(calc(var(--app-width) * 700 / 485 - 5px), calc(55vh - 5px)),
+    375px
+  );
 }
 
 .card-stack .card {
@@ -206,7 +210,7 @@ body {
   position: relative;
   grid-area: 1 / 1;
   align-self: end;
-  padding: 42px 24px 21px;
+  padding: 26px 22px 26px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -216,12 +220,12 @@ body {
   z-index: 1;
   align-items: center;
   text-align: center;
+  transform: translateY(10px);
 }
 
 .card-body h1 {
-  margin: 12px 0 0;
-  font-size: 1.16rem;
-  line-height: 1.2;
+  margin: 0;
+  font-size: 1.45rem;
   color: #05070c;
 }
 
@@ -238,6 +242,7 @@ body {
   padding: 38px 26px;
   gap: 18px;
   min-height: 100%;
+  transform: none;
 }
 
 .card--defeat .card-body h1 {
