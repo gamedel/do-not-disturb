@@ -125,17 +125,26 @@ body {
 
 .card-stack {
   position: relative;
-  width: 100%;
-  max-width: 485px;
+  width: min(485px, 100%);
+  margin: 0 auto;
   aspect-ratio: 485 / 700;
   max-height: 100%;
   flex: 0 0 auto;
   min-height: 0;
 }
 
+@supports not (aspect-ratio: 1 / 1) {
+  .card-stack::before {
+    content: '';
+    display: block;
+    padding-top: calc(700 / 485 * 100%);
+  }
+}
+
 .card-stack .card {
   position: absolute;
   inset: 0;
+  height: 100%;
 }
 
 .card {
@@ -191,6 +200,7 @@ body {
   justify-content: center;
   overflow: hidden;
   grid-area: 1 / 1;
+  border-radius: 24px;
 }
 
 .card-image img {
@@ -199,6 +209,15 @@ body {
   object-fit: cover;
   display: block;
   clip-path: inset(3px round 21px);
+}
+
+@supports not (clip-path: inset(3px round 21px)) {
+  .card-image img {
+    width: calc(100% + 6px);
+    height: calc(100% + 6px);
+    margin: -3px;
+    border-radius: 24px;
+  }
 }
 
 .card-body {
@@ -218,7 +237,7 @@ body {
 }
 
 .card-body h1 {
-  margin: 20px 0 0;
+  margin: 10px 0 0;
   font-size: 1.45rem;
   color: #05070c;
 }
@@ -239,7 +258,7 @@ body {
 }
 
 .card--defeat .card-body h1 {
-  margin-top: 20px;
+  margin-top: 10px;
   font-size: 1.58rem;
   color: #04060d;
 }
