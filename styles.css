@@ -237,8 +237,8 @@ body {
 }
 
 .card-body h1 {
-  margin: 0;
-  font-size: 1.24rem;
+  margin: 10px 0 0;
+  font-size: 1.12rem;
   color: #05070c;
 }
 
