@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `dnd-cache-${CACHE_VERSION}`;
 const ASSET_PATHS = [
   './',
@@ -6,6 +6,7 @@ const ASSET_PATHS = [
   'styles.css',
   'main.js',
   'cards.json',
+  'story_cards.json',
   'manifest.webmanifest'
 ];
 const ASSETS = ASSET_PATHS.map((path) => new URL(path, self.location).toString());

@@ -1,0 +1,1112 @@
+[
+    {
+        "id": "story_01",
+        "title": "Первая смена.",
+        "text": "Вы впервые заступаете на ночную смену в \"Северной Короне\". Пожилой консьерж, передавая вам дела, вручает старый латунный ключ со стертой гравировкой. \"Это от старого архива в подвале. На всякий случай. Но туда уже лет двадцать никто не ходил\".",
+        "image": "assets/cards/history1.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_02",
+        "title": "Странная находка.",
+        "text": "Во время обхода вы замечаете под ковром в холле что-то блестящее. Это старинная запонка с инициалами \"А.Л.\". Вы убираете ее в ящик стола.",
+        "image": "assets/cards/history2.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_03",
+        "title": "Забытая книга.",
+        "text": "В библиотеке отеля, куда вы зашли заварить себе чаю, на полке стоит одинокий том стихов. Внутри — засушенная роза и карандашная пометка: \"Для А.Л., с надеждой на встречу. Комната 303\".",
+        "image": "assets/cards/history3.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_04",
+        "title": "Ночной звонок.",
+        "text": "На стойку поступает звонок. На дисплее — \"Комната 303\", но в ней сейчас никто не живет, она на ремонте. В трубке — лишь тихий треск, похожий на звук старой пластинки.",
+        "image": "assets/cards/history4.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_05",
+        "title": "Рассказ горничной.",
+        "text": "Утром старшая горничная, заметив на вашем столе книгу, рассказывает легенду о пианисте, который когда-то жил в 303 номере и бесследно исчез, оставив лишь ноты неоконченной мелодии.",
+        "image": "assets/cards/history5.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_06",
+        "title": "Архив.",
+        "text": "Любопытство берет верх. Вы спускаетесь в пыльный архив. В старых журналах регистрации за 1980-е годы вы находите запись: \"Александр Линдт, комната 303\".",
+        "image": "assets/cards/history6.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_07",
+        "title": "Фотография в конверте.",
+        "text": "В одном из регистрационных журналов вы находите старый пожелтевший конверт. Внутри — фотография молодого человека за роялем. На обороте надпись: \"А.Л. 'Северная Корона'\".",
+        "image": "assets/cards/history7.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_08",
+        "title": "Музыка в холле.",
+        "text": "Глубокой ночью из пустого холла доносятся тихие звуки рояля. Вы выходите, но музыка тут же стихает. На рояле — едва заметный отпечаток пальца на пыльной крышке.",
+        "image": "assets/cards/history8.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_09",
+        "title": "Письмо без адресата.",
+        "text": "Разбирая старую корреспонденцию, вы находите недоставленное письмо, адресованное Александру Линдту. В нем говорится о предстоящем важном выступлении и о какой-то тайне.",
+        "image": "assets/cards/history9.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_10",
+        "title": "Комната 303.",
+        "text": "Вы решаетесь зайти в пустующую комнату 303. Под отошедшими обоями виден край старой газетной вырезки.",
+        "image": "assets/cards/history10.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_11",
+        "title": "Газетная вырезка.",
+        "text": "Вы аккуратно достаете фрагмент. Это заметка о музыкальном конкурсе, где упоминается \"молодой талант Александр Линдт\", который не явился на финальное выступление.",
+        "image": "assets/cards/history11.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_12",
+        "title": "Запрос в городской архив.",
+        "text": "Вы отправляете запрос в городской архив по поводу конкурса и Александра Линдта. Через несколько дней приходит ответ: \"Информация засекречена по просьбе семьи\".",
+        "image": "assets/cards/history12.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_13",
+        "title": "Посылка для отеля.",
+        "text": "В отель приходит посылка без обратного адреса. Внутри — старая виниловая пластинка с единственной записью фортепианной пьесы. Название стерто.",
+        "image": "assets/cards/history13.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_14",
+        "title": "Разговор с консьержем.",
+        "text": "Вы показываете пластинку пожилому консьержу. Он бледнеет и говорит, что это та самая мелодия, которую играл Линдт перед своим исчезновением.",
+        "image": "assets/cards/history14.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_15",
+        "title": "Тайник за картиной.",
+        "text": "В комнате 303, за старой картиной с зимним пейзажем, вы нащупываете небольшой сейф, встроенный в стену.",
+        "image": "assets/cards/history15.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_16",
+        "title": "Поиски шифра.",
+        "text": "Вы понимаете, что код от сейфа где-то спрятан. Ваши догадки ведут к номеру комнаты и дате последней записи в журнале.",
+        "image": "assets/cards/history16.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_17",
+        "title": "Открытый сейф.",
+        "text": "Комбинация подходит. Внутри лежит пачка писем, перевязанных лентой, и маленький ключ от банковской ячейки.",
+        "image": "assets/cards/history17.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_18",
+        "title": "Письма.",
+        "text": "Это переписка Александра с его возлюбленной, в которой он пишет, что вынужден скрываться из-за политических разногласий его семьи и боится за свою жизнь.",
+        "image": "assets/cards/history18.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_19",
+        "title": "Тайна исчезновения.",
+        "text": "Из писем становится ясно: Александр не исчез, а инсценировал свое исчезновение с помощью верных сотрудников отеля, чтобы тайно уехать из страны.",
+        "image": "assets/cards/history19.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_20",
+        "title": "Неоконченная мелодия.",
+        "text": "В последнем письме он пишет: \"Я оставил ноты своей последней пьесы. Это ключ. Она приведет тебя ко мне\".",
+        "image": "assets/cards/history20.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_21",
+        "title": "Ноты в рояле.",
+        "text": "Вы открываете крышку старого рояля в холле и находите под пюпитром пожелтевший лист с нотами.",
+        "image": "assets/cards/history21.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_22",
+        "title": "Шифр в музыке.",
+        "text": "Некоторые ноты обведены. Вы понимаете, что это не просто музыка, а шифр.",
+        "image": "assets/cards/history22.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_23",
+        "title": "Визит незнакомки.",
+        "text": "В отель заселяется элегантная пожилая дама. Она долго смотрит на рояль и спрашивает, не слышали ли вы когда-нибудь старую мелодию, которую играли здесь много лет назад.",
+        "image": "assets/cards/history23.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_24",
+        "title": "Разгадка шифра.",
+        "text": "Вы соотносите обведенные ноты с буквами и получаете название небольшого городка в Швейцарии.",
+        "image": "assets/cards/history24.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_25",
+        "title": "Разговор по душам.",
+        "text": "Вы решаетесь поговорить с дамой. Оказывается, это та самая возлюбленная Александра. Она всю жизнь ждала знака.",
+        "image": "assets/cards/history25.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_26",
+        "title": "Передача находки.",
+        "text": "Вы отдаете ей письма, ключ от ячейки и расшифрованное название города. Слезы текут по ее щекам.",
+        "image": "assets/cards/history26.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_27",
+        "title": "Благодарность.",
+        "text": "Перед отъездом она оставляет вам конверт. Внутри — старинная открытка с видом \"Северной Короны\" и надписью: \"Спасибо, что вернули музыку в эти стены\".",
+        "image": "assets/cards/history27.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_28",
+        "title": "Последний отголосок.",
+        "text": "Ночью, во время обхода, вы снова слышите тихую музыку из холла. Но на этот раз она звучит полностью, до последней ноты, и в ней нет тоски.",
+        "image": "assets/cards/history28.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_29",
+        "title": "Новая глава.",
+        "text": "История \"Гостя из прошлого\" становится частью наследия отеля. Вы аккуратно вклеиваете фотографию Линдта в новый альбом для почетных гостей. Тайна раскрыта.",
+        "image": "assets/cards/history29.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    },
+    {
+        "id": "story_30",
+        "title": "Рассвет над \"Короной\".",
+        "text": "Ваша смена окончена. Вы выходите на улицу, встречая рассвет. Вы не просто администратор, а хранитель историй этого места. Впереди — новый день и новые загадки. Сезон прожит не зря.",
+        "image": "assets/cards/history30.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            },
+            "right": {
+                "label": "Хорошо",
+                "effects": {
+                    "service": 0,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": 0
+                },
+                "adds": [],
+                "removes": [],
+                "flags_set": {}
+            }
+        },
+        "conditions": null,
+        "chain_id": null
+    }
+]

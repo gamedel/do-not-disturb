@@ -6,6 +6,8 @@ const RESOURCE_MAX = 10;
 
 let cardList = [];
 let cardMap = new Map();
+let storyCardList = [];
+let storyCardMap = new Map();
 let state = null;
 let loading = true;
 let isAnimating = false;
@@ -14,6 +16,7 @@ const MAX_DRAG_DISTANCE = 180;
 let nextCardId = null;
 const HINT_ACTIVE_CLASS = 'swipe-indicator--active';
 const HINT_DISABLED_CLASS = 'swipe-indicator--disabled';
+const STORY_CARD_INTERVAL = 5;
 
 const DEFEAT_SCENARIOS = {
   service: {
@@ -46,6 +49,13 @@ const DEFEAT_SCENARIOS = {
     statusMessage: 'Ресурсы закончились. Запустите новую смену.',
     hint: 'Нажмите «Новая смена»',
   },
+};
+
+const VICTORY_SCENARIO = {
+  title: 'История завершена',
+  text: 'Вы довели историю Александра Линдта до рассвета и сохранили легенду «Северной Короны». Сделайте вдох — впереди новая смена и новые тайны.',
+  statusMessage: 'История завершена. Нажмите «Новая смена», чтобы начать заново.',
+  hint: 'Нажмите «Новая смена»',
 };
 
 const gestureState = {
@@ -336,9 +346,16 @@ function updatePreviewCardView(card) {
 
 async function init() {
   try {
-    const response = await fetch('cards.json');
-    cardList = await response.json();
-    cardMap = new Map(cardList.map((card) => [card.id, card]));
+    const [cardsResponse, storyResponse] = await Promise.all([
+      fetch('cards.json'),
+      fetch('story_cards.json'),
+    ]);
+    cardList = await cardsResponse.json();
+    storyCardList = await storyResponse.json();
+    cardMap = new Map(
+      [...cardList, ...storyCardList].map((card) => [card.id, card])
+    );
+    storyCardMap = new Map(storyCardList.map((card) => [card.id, card]));
   } catch (error) {
     console.error('Не удалось загрузить карты', error);
     elements.status.textContent = 'Ошибка загрузки карточек.';
@@ -366,8 +383,11 @@ function createInitialState() {
     deck,
     flags: {},
     currentCardId: null,
+    cardsPlayed: 0,
+    storyIndex: 0,
     gameOver: false,
     defeatReason: null,
+    victory: false,
   };
 }
 
@@ -382,6 +402,25 @@ function loadState() {
       }
       if (!parsed.gameOver) {
         parsed.defeatReason = null;
+        parsed.victory = false;
+      }
+      if (typeof parsed.cardsPlayed !== 'number' || !Number.isFinite(parsed.cardsPlayed)) {
+        parsed.cardsPlayed = 0;
+      }
+      parsed.cardsPlayed = Math.max(0, Math.floor(parsed.cardsPlayed));
+      const maxStoriesAvailable = Math.min(
+        storyCardList.length,
+        Math.floor(parsed.cardsPlayed / STORY_CARD_INTERVAL)
+      );
+      if (typeof parsed.storyIndex !== 'number' || !Number.isFinite(parsed.storyIndex)) {
+        parsed.storyIndex = 0;
+      }
+      parsed.storyIndex = Math.max(
+        0,
+        Math.min(Math.floor(parsed.storyIndex), maxStoriesAvailable)
+      );
+      if (typeof parsed.victory !== 'boolean') {
+        parsed.victory = false;
       }
       if (parsed.resources && typeof parsed.resources === 'object') {
         if ('burnout' in parsed.resources && !('energy' in parsed.resources)) {
@@ -419,6 +458,52 @@ function updateResources() {
   });
 }
 
+function isStoryCardId(id) {
+  return storyCardMap.has(id);
+}
+
+function getStoryCardIdForPosition(position) {
+  if (!storyCardList.length || !state) return null;
+  if (!Number.isInteger(position) || position <= 0) return null;
+  if (position % STORY_CARD_INTERVAL !== 0) return null;
+
+  const index = Math.floor(position / STORY_CARD_INTERVAL) - 1;
+  if (index < 0 || index >= storyCardList.length) {
+    return null;
+  }
+
+  if (index !== state.storyIndex) {
+    return null;
+  }
+
+  const card = storyCardList[index];
+  return card ? card.id : null;
+}
+
+function drawCardFromDeck(deckSource) {
+  ensureDeckHasCards();
+  const deck = deckSource ?? state.deck;
+  if (!Array.isArray(deck) || deck.length === 0) {
+    return null;
+  }
+
+  let attempts = deck.length;
+  while (attempts > 0 && deck.length > 0) {
+    const nextId = deck.shift();
+    const card = cardMap.get(nextId);
+    if (!card) {
+      attempts -= 1;
+      continue;
+    }
+    if (meetsConditions(card)) {
+      return nextId;
+    }
+    deck.push(nextId);
+    attempts -= 1;
+  }
+  return null;
+}
+
 function meetsConditions(card) {
   const { conditions } = card;
   if (!conditions) return true;
@@ -451,42 +536,28 @@ function ensureDeckHasCards() {
 }
 
 function pullNextCardId() {
-  ensureDeckHasCards();
-  let attempts = state.deck.length;
-  while (attempts > 0 && state.deck.length > 0) {
-    const nextId = state.deck.shift();
-    const card = cardMap.get(nextId);
-    if (!card) {
-      attempts -= 1;
-      continue;
-    }
-    if (meetsConditions(card)) {
-      return nextId;
-    }
-    state.deck.push(nextId);
-    attempts -= 1;
+  const position = (state?.cardsPlayed ?? 0) + 1;
+  const storyId = getStoryCardIdForPosition(position);
+  if (storyId) {
+    return storyId;
   }
-  return null;
+  return drawCardFromDeck(state.deck);
 }
 
 function peekNextCardId() {
-  ensureDeckHasCards();
-  const deckCopy = [...state.deck];
-  let attempts = deckCopy.length;
-  while (attempts > 0 && deckCopy.length > 0) {
-    const nextId = deckCopy.shift();
-    const card = cardMap.get(nextId);
-    if (!card) {
-      attempts -= 1;
-      continue;
-    }
-    if (meetsConditions(card)) {
-      return nextId;
-    }
-    deckCopy.push(nextId);
-    attempts -= 1;
+  if (!state || state.gameOver) return null;
+  const base = state.cardsPlayed ?? 0;
+  const offset = state.currentCardId ? 2 : 1;
+  const position = base + offset;
+  const storyId = getStoryCardIdForPosition(position);
+  if (storyId) {
+    return storyId;
   }
-  return null;
+
+  ensureDeckHasCards();
+  const deckCopy = Array.isArray(state.deck) ? [...state.deck] : [];
+  if (!deckCopy.length) return null;
+  return drawCardFromDeck(deckCopy);
 }
 
 function showNoCardsState({ skipAnimation = false } = {}) {
@@ -516,7 +587,11 @@ function renderCard(options = {}) {
   if (state.gameOver) {
     nextCardId = null;
     updatePreviewCardView(null);
-    showDefeatCard(state.defeatReason);
+    if (state.victory) {
+      showVictoryCard();
+    } else {
+      showDefeatCard(state.defeatReason);
+    }
     saveState();
     if (!skipAnimation) {
       playCardEnterAnimation();
@@ -583,6 +658,7 @@ async function handleChoice(side) {
   if (!card) return;
   const choice = card.choices?.[side];
   if (!choice) return;
+  const isStoryCard = isStoryCardId(card.id);
 
   isAnimating = true;
   disableChoices(true);
@@ -600,12 +676,26 @@ async function handleChoice(side) {
   applyFlags(choice.flags_set);
   applyDeckChanges(choice.adds, choice.removes);
 
+  state.cardsPlayed = (state.cardsPlayed ?? 0) + 1;
+  if (isStoryCard) {
+    const nextStoryIndex = (state.storyIndex ?? 0) + 1;
+    state.storyIndex = Math.min(nextStoryIndex, storyCardList.length);
+  }
   state.day += 1;
   updateResources();
 
-  const defeated = checkDefeat();
+  let victoryAchieved = false;
+  if (isStoryCard && state.storyIndex >= storyCardList.length) {
+    state.gameOver = true;
+    state.victory = true;
+    state.defeatReason = null;
+    state.currentCardId = null;
+    victoryAchieved = true;
+  }
 
-  if (defeated || state.gameOver) {
+  const defeated = victoryAchieved ? false : checkDefeat();
+
+  if (victoryAchieved || defeated || state.gameOver) {
     nextCardId = null;
     updatePreviewCardView(null);
     postAnimationAction = () => {
@@ -698,6 +788,29 @@ function applyDeckChanges(adds = [], removes = []) {
   if (removes.length) {
     state.deck = state.deck.filter((id) => !removes.includes(id));
   }
+}
+
+function showVictoryCard() {
+  disableChoices(true);
+
+  if (cardViews.current.card) {
+    cardViews.current.card.classList.remove('card--defeat');
+  }
+
+  const victoryCard = {
+    title: VICTORY_SCENARIO.title,
+    text: VICTORY_SCENARIO.text,
+    image: VICTORY_SCENARIO.image ?? '',
+  };
+
+  setCardContent(cardViews.current, victoryCard);
+
+  if (elements.status && VICTORY_SCENARIO.statusMessage) {
+    elements.status.textContent = VICTORY_SCENARIO.statusMessage;
+  }
+
+  setHintContent(elements.hintLeft, 'Смена завершена', VICTORY_SCENARIO.hint);
+  setHintContent(elements.hintRight, 'Смена завершена', VICTORY_SCENARIO.hint);
 }
 
 function showDefeatCard(reasonKey) {
