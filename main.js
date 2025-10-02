@@ -410,7 +410,10 @@ function loadState() {
       parsed.cardsPlayed = Math.max(0, Math.floor(parsed.cardsPlayed));
       const maxStoriesAvailable = Math.min(
         storyCardList.length,
-        Math.floor(parsed.cardsPlayed / STORY_CARD_INTERVAL)
+        Math.floor(
+          (parsed.cardsPlayed + (STORY_CARD_INTERVAL - 1)) /
+            STORY_CARD_INTERVAL
+        )
       );
       if (typeof parsed.storyIndex !== 'number' || !Number.isFinite(parsed.storyIndex)) {
         parsed.storyIndex = 0;
@@ -465,9 +468,11 @@ function isStoryCardId(id) {
 function getStoryCardIdForPosition(position) {
   if (!storyCardList.length || !state) return null;
   if (!Number.isInteger(position) || position <= 0) return null;
-  if (position % STORY_CARD_INTERVAL !== 0) return null;
 
-  const index = Math.floor(position / STORY_CARD_INTERVAL) - 1;
+  const offsetPosition = position - 1;
+  if (offsetPosition % STORY_CARD_INTERVAL !== 0) return null;
+
+  const index = Math.floor(offsetPosition / STORY_CARD_INTERVAL);
   if (index < 0 || index >= storyCardList.length) {
     return null;
   }
