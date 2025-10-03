@@ -9,68 +9,158 @@
         ],
         "choices": {
             "left": {
-                "label": "Хорошо",
+                "label": "Взять ключ и расспросить о подвале",
                 "effects": {
-                    "service": 0,
+                    "service": 1,
                     "revenue": 0,
-                    "order": 0,
-                    "energy": 0
+                    "order": -1,
+                    "energy": -1
                 },
-                "adds": [],
-                "removes": [],
-                "flags_set": {}
+                "adds": [
+                    "archive_whisper"
+                ],
+                "removes": [
+                    "skeptic_report"
+                ],
+                "flags_set": {
+                    "old_key_taken": true,
+                    "old_key_returned": false
+                }
             },
             "right": {
-                "label": "Хорошо",
+                "label": "Отказать и сосредоточиться на смене",
                 "effects": {
                     "service": 0,
                     "revenue": 0,
-                    "order": 0,
-                    "energy": 0
+                    "order": 1,
+                    "energy": 1
                 },
-                "adds": [],
-                "removes": [],
-                "flags_set": {}
+                "adds": [
+                    "skeptic_report"
+                ],
+                "removes": [
+                    "archive_whisper"
+                ],
+                "flags_set": {
+                    "old_key_taken": false,
+                    "old_key_returned": true
+                }
             }
         },
         "conditions": null,
         "chain_id": null
     },
     {
-        "id": "story_02",
-        "title": "Странная находка.",
-        "text": "Во время обхода вы замечаете под ковром в холле что-то блестящее. Это старинная запонка с инициалами \"А.Л.\". Вы убираете ее в ящик стола.",
+        "id": "story_02_alt",
+        "title": "Странная находка без ключа.",
+        "text": "Вы возвращаете запонку в бюро находок. Записи смены придется писать аккуратнее: странностей становится слишком много даже без походов в подвал.",
         "image": "assets/cards/history2.jpg",
         "tags": [
             "story"
         ],
         "choices": {
             "left": {
-                "label": "Хорошо",
+                "label": "Отложить разбор до утра",
                 "effects": {
-                    "service": 0,
+                    "service": -1,
                     "revenue": 0,
-                    "order": 0,
-                    "energy": 0
+                    "order": 1,
+                    "energy": 1
                 },
-                "adds": [],
-                "removes": [],
-                "flags_set": {}
+                "adds": [
+                    "skeptic_report"
+                ],
+                "removes": [
+                    "reported_cufflink_followup"
+                ],
+                "flags_set": {
+                    "archive_skeptic": true,
+                    "cufflink_secret": false,
+                    "cufflink_reported": false
+                }
             },
             "right": {
-                "label": "Хорошо",
+                "label": "Сообщить управляющему немедленно",
+                "effects": {
+                    "service": 1,
+                    "revenue": 0,
+                    "order": 0,
+                    "energy": -1
+                },
+                "adds": [
+                    "reported_cufflink_followup"
+                ],
+                "removes": [
+                    "skeptic_report"
+                ],
+                "flags_set": {
+                    "archive_skeptic": false,
+                    "cufflink_reported": true
+                }
+            }
+        },
+        "conditions": {
+            "requires_flags": {
+                "old_key_returned": true
+            }
+        },
+        "chain_id": null
+    },
+    {
+        "id": "story_02",
+        "title": "Странная находка.",
+        "text": "Во время обхода вы замечаете под ковром в холле что-то блестящее. Это старинная запонка с инициалами \"А.Л.\". Ключ в кармане подталкивает вернуться в архив и понять, как вещь оказалась здесь.",
+        "image": "assets/cards/history2.jpg",
+        "tags": [
+            "story"
+        ],
+        "choices": {
+            "left": {
+                "label": "Спрятать запонку как улику",
                 "effects": {
                     "service": 0,
                     "revenue": 0,
-                    "order": 0,
+                    "order": -1,
+                    "energy": -1
+                },
+                "adds": [
+                    "cufflink_note"
+                ],
+                "removes": [
+                    "reported_cufflink_followup"
+                ],
+                "flags_set": {
+                    "archive_investigation": true,
+                    "cufflink_secret": true,
+                    "cufflink_reported": false
+                }
+            },
+            "right": {
+                "label": "Передать находку охране",
+                "effects": {
+                    "service": 1,
+                    "revenue": 0,
+                    "order": 1,
                     "energy": 0
                 },
-                "adds": [],
-                "removes": [],
-                "flags_set": {}
+                "adds": [
+                    "reported_cufflink_followup"
+                ],
+                "removes": [
+                    "cufflink_note"
+                ],
+                "flags_set": {
+                    "archive_investigation": false,
+                    "cufflink_secret": false,
+                    "cufflink_reported": true
+                }
             }
         },
-        "conditions": null,
+        "conditions": {
+            "requires_flags": {
+                "old_key_taken": true
+            }
+        },
         "chain_id": null
     },
     {
@@ -83,28 +173,32 @@
         ],
         "choices": {
             "left": {
-                "label": "Хорошо",
+                "label": "Забрать книгу для изучения",
                 "effects": {
-                    "service": 0,
+                    "service": 1,
                     "revenue": 0,
-                    "order": 0,
-                    "energy": 0
+                    "order": -1,
+                    "energy": -1
                 },
                 "adds": [],
                 "removes": [],
-                "flags_set": {}
+                "flags_set": {
+                    "library_clue_saved": true
+                }
             },
             "right": {
-                "label": "Хорошо",
+                "label": "Вернуть книгу на полку",
                 "effects": {
-                    "service": 0,
+                    "service": -1,
                     "revenue": 0,
-                    "order": 0,
-                    "energy": 0
+                    "order": 1,
+                    "energy": 1
                 },
                 "adds": [],
                 "removes": [],
-                "flags_set": {}
+                "flags_set": {
+                    "library_clue_saved": false
+                }
             }
         },
         "conditions": null,

@@ -472,17 +472,24 @@ function getStoryCardIdForPosition(position) {
   const offsetPosition = position - 1;
   if (offsetPosition % STORY_CARD_INTERVAL !== 0) return null;
 
-  const index = Math.floor(offsetPosition / STORY_CARD_INTERVAL);
-  if (index < 0 || index >= storyCardList.length) {
-    return null;
+  let index = state.storyIndex ?? 0;
+  if (index < 0) {
+    index = 0;
   }
 
-  if (index !== state.storyIndex) {
-    return null;
+  while (index < storyCardList.length) {
+    const card = storyCardList[index];
+    if (!card || meetsConditions(card)) {
+      if (state.storyIndex !== index) {
+        state.storyIndex = index;
+      }
+      return card ? card.id : null;
+    }
+    index += 1;
+    state.storyIndex = index;
   }
 
-  const card = storyCardList[index];
-  return card ? card.id : null;
+  return null;
 }
 
 function drawCardFromDeck(deckSource) {
