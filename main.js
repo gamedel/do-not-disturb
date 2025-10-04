@@ -382,6 +382,7 @@ function createInitialState() {
     day: 1,
     deck,
     flags: {},
+    modifiers: {},
     currentCardId: null,
     cardsPlayed: 0,
     storyIndex: 0,
@@ -425,6 +426,10 @@ function loadState() {
       if (typeof parsed.victory !== 'boolean') {
         parsed.victory = false;
       }
+      if (!parsed.modifiers || typeof parsed.modifiers !== 'object') {
+        parsed.modifiers = {};
+      }
+      parsed.modifiers = normalizeLoadedModifiers(parsed.modifiers);
       if (parsed.resources && typeof parsed.resources === 'object') {
         if ('burnout' in parsed.resources && !('energy' in parsed.resources)) {
           parsed.resources.energy = parsed.resources.burnout;
@@ -684,9 +689,11 @@ async function handleChoice(side) {
   let upcomingPreviewCard = null;
   let postAnimationAction = null;
 
+  applyStatusEffects(choice.status_effects);
   applyEffects(choice.effects);
   applyFlags(choice.flags_set);
   applyDeckChanges(choice.adds, choice.removes);
+  advanceStatusEffects();
 
   state.cardsPlayed = (state.cardsPlayed ?? 0) + 1;
   if (isStoryCard) {
@@ -782,10 +789,228 @@ async function handleChoice(side) {
 }
 
 function applyEffects(effects = {}) {
+  if (!state) return;
+
+  const baseDeltas = {};
   RESOURCE_KEYS.forEach((key) => {
-    const delta = effects[key] ?? 0;
-    state.resources[key] = clamp(state.resources[key] + delta, RESOURCE_MIN, RESOURCE_MAX);
+    const raw = effects[key];
+    const numeric = Number(raw);
+    baseDeltas[key] = Number.isFinite(numeric) ? numeric : 0;
   });
+
+  const activeModifiers = Object.values(ensureModifierContainer());
+  const totals = {
+    passive: createResourceAccumulator(),
+    flat: createResourceAccumulator(),
+    positive: createResourceAccumulator(),
+    negative: createResourceAccumulator(),
+  };
+
+  activeModifiers.forEach((modifier) => {
+    if (!modifier || typeof modifier !== 'object') return;
+    const config = modifier.modifiers;
+    if (!config || typeof config !== 'object') return;
+    accumulateResourceTotals(totals.passive, config.passive);
+    accumulateResourceTotals(totals.flat, config.flat);
+    accumulateResourceTotals(totals.positive, config.positive);
+    accumulateResourceTotals(totals.negative, config.negative);
+  });
+
+  RESOURCE_KEYS.forEach((key) => {
+    let delta = baseDeltas[key];
+    if (delta > 0) {
+      delta += totals.positive[key];
+    } else if (delta < 0) {
+      delta += totals.negative[key];
+    }
+    delta += totals.flat[key];
+    delta += totals.passive[key];
+
+    if (delta !== 0) {
+      state.resources[key] = clamp(
+        (state.resources[key] ?? DEFAULT_RESOURCE_VALUE) + delta,
+        RESOURCE_MIN,
+        RESOURCE_MAX
+      );
+    }
+  });
+}
+
+function applyStatusEffects(statusEffects = []) {
+  if (!Array.isArray(statusEffects) || !statusEffects.length || !state) return;
+
+  const modifiers = ensureModifierContainer();
+
+  statusEffects.forEach((effect, index) => {
+    if (!effect || typeof effect !== 'object') return;
+    const baseId = typeof effect.id === 'string' ? effect.id.trim() : '';
+    if (!baseId) return;
+
+    const normalizedConfig = normalizeModifierConfig(effect.modifiers || effect.effects);
+    if (!normalizedConfig) return;
+
+    const duration = Number.isFinite(effect.duration)
+      ? Math.floor(effect.duration)
+      : Number.isFinite(Number(effect.duration))
+      ? Math.floor(Number(effect.duration))
+      : 0;
+
+    if (!Number.isFinite(duration) || duration <= 0) return;
+
+    const stackable = Boolean(effect.stackable);
+    let modifierId = baseId;
+
+    if (!stackable) {
+      Object.keys(modifiers).forEach((id) => {
+        const existing = modifiers[id];
+        if (!existing || typeof existing !== 'object') return;
+        const template = existing.templateId || id.split('#')[0];
+        if (template === baseId) {
+          delete modifiers[id];
+        }
+      });
+    } else if (modifiers[modifierId]) {
+      modifierId = `${baseId}#${Date.now()}#${index}`;
+    }
+
+    modifiers[modifierId] = {
+      id: modifierId,
+      templateId: baseId,
+      name: effect.name || effect.title || baseId,
+      description: effect.description || '',
+      remaining: duration,
+      modifiers: normalizedConfig,
+    };
+  });
+}
+
+function advanceStatusEffects() {
+  const modifiers = ensureModifierContainer();
+  Object.keys(modifiers).forEach((modifierId) => {
+    const modifier = modifiers[modifierId];
+    if (!modifier || typeof modifier !== 'object') {
+      delete modifiers[modifierId];
+      return;
+    }
+
+    const remaining = Number.isFinite(modifier.remaining)
+      ? Math.floor(modifier.remaining) - 1
+      : -1;
+
+    if (remaining > 0) {
+      modifier.remaining = remaining;
+    } else {
+      delete modifiers[modifierId];
+    }
+  });
+}
+
+function ensureModifierContainer() {
+  if (!state || typeof state !== 'object') {
+    return {};
+  }
+  if (!state.modifiers || typeof state.modifiers !== 'object') {
+    state.modifiers = {};
+  }
+  return state.modifiers;
+}
+
+function createResourceAccumulator() {
+  return RESOURCE_KEYS.reduce((acc, key) => {
+    acc[key] = 0;
+    return acc;
+  }, {});
+}
+
+function accumulateResourceTotals(target, source) {
+  if (!target || !source || typeof source !== 'object') return;
+  RESOURCE_KEYS.forEach((key) => {
+    const value = Number(source[key]);
+    if (Number.isFinite(value) && value !== 0) {
+      target[key] += value;
+    }
+  });
+}
+
+function normalizeModifierConfig(config) {
+  if (!config || typeof config !== 'object') return null;
+
+  const normalized = {};
+  ['positive', 'negative', 'passive', 'flat'].forEach((sectionKey) => {
+    const section = config[sectionKey];
+    if (!section || typeof section !== 'object') return;
+    const normalizedSection = {};
+    RESOURCE_KEYS.forEach((resourceKey) => {
+      const value = Number(section[resourceKey]);
+      if (Number.isFinite(value) && value !== 0) {
+        normalizedSection[resourceKey] = value;
+      }
+    });
+    if (Object.keys(normalizedSection).length > 0) {
+      normalized[sectionKey] = normalizedSection;
+    }
+  });
+
+  const directSection = {};
+  RESOURCE_KEYS.forEach((resourceKey) => {
+    const value = Number(config[resourceKey]);
+    if (Number.isFinite(value) && value !== 0) {
+      directSection[resourceKey] = value;
+    }
+  });
+
+  if (Object.keys(directSection).length > 0) {
+    normalized.passive = {
+      ...(normalized.passive || {}),
+      ...directSection,
+    };
+  }
+
+  return Object.keys(normalized).length > 0 ? normalized : null;
+}
+
+function normalizeLoadedModifiers(rawModifiers) {
+  if (!rawModifiers || typeof rawModifiers !== 'object') {
+    return {};
+  }
+
+  const normalized = {};
+  Object.entries(rawModifiers).forEach(([rawId, modifier]) => {
+    if (!modifier || typeof modifier !== 'object') {
+      return;
+    }
+
+    const modifierId = typeof rawId === 'string' && rawId.trim()
+      ? rawId.trim()
+      : typeof modifier.id === 'string' && modifier.id.trim()
+      ? modifier.id.trim()
+      : null;
+    if (!modifierId) {
+      return;
+    }
+
+    const duration = Number(modifier.remaining);
+    const remaining = Number.isFinite(duration) ? Math.max(0, Math.floor(duration)) : 0;
+    if (remaining <= 0) {
+      return;
+    }
+
+    const config = normalizeModifierConfig(modifier.modifiers || modifier.effects);
+    if (!config) {
+      return;
+    }
+
+    normalized[modifierId] = {
+      id: modifierId,
+      templateId: modifier.templateId || modifier.template || modifierId.split('#')[0] || modifierId,
+      name: modifier.name || modifier.title || modifierId,
+      description: modifier.description || '',
+      remaining,
+      modifiers: config,
+    };
+  });
+
+  return normalized;
 }
 
 function applyFlags(flags = {}) {

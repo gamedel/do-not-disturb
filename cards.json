@@ -1252,5 +1252,103 @@
       }
     },
     "chain_id": null
+  },
+  {
+    "id": "team_playlist",
+    "title": "Командный плейлист.",
+    "text": "Ночной менеджер принес колонку и предлагает включить бодрый плейлист, чтобы команда не выдохлась к утру.",
+    "image": "assets/cards/card21.jpg",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Включить энергичный сет",
+        "effects": {
+          "service": 1,
+          "revenue": 0,
+          "order": 0,
+          "energy": 1
+        },
+        "status_effects": [
+          {
+            "id": "energizing_playlist",
+            "name": "Заряженная смена",
+            "description": "Пока играет музыка, каждый прирост энергии усиливается на 1.",
+            "duration": 3,
+            "modifiers": {
+              "positive": {
+                "energy": 1
+              }
+            }
+          }
+        ],
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Оставить тишину в лобби",
+        "effects": {
+          "service": 0,
+          "revenue": 0,
+          "order": 1,
+          "energy": -1
+        },
+        "status_effects": [],
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
+  },
+  {
+    "id": "vip_complaints",
+    "title": "ВИПы жалуются.",
+    "text": "Две VIP-группы одновременно требуют внимания и лучших номеров. Команда уже на пределе.",
+    "image": "assets/cards/card22.jpg",
+    "tags": [],
+    "choices": {
+      "left": {
+        "label": "Бросить силы на персональный сервис",
+        "effects": {
+          "service": 2,
+          "revenue": -1,
+          "order": -1,
+          "energy": -2
+        },
+        "status_effects": [],
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      },
+      "right": {
+        "label": "Раздать ваучеры и переждать натиск",
+        "effects": {
+          "service": -1,
+          "revenue": -1,
+          "order": 1,
+          "energy": 0
+        },
+        "status_effects": [
+          {
+            "id": "service_pressure",
+            "name": "Требовательные гости",
+            "description": "Каждый день сервис проседает на 1, пока VIP-гости бурчат.",
+            "duration": 2,
+            "modifiers": {
+              "passive": {
+                "service": -1
+              }
+            }
+          }
+        ],
+        "adds": [],
+        "removes": [],
+        "flags_set": {}
+      }
+    },
+    "conditions": null,
+    "chain_id": null
   }
 ]
